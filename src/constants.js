@@ -1,4 +1,3 @@
-const START_ID_COUNTER = 0;
 const MIN_IMAGES_COUNT = 0;
 const MAX_IMAGES_COUNT = 6;
 const MIN_OFFERS_COUNT = 0;
@@ -34,7 +33,6 @@ const TIME_FORMAT = 'HH:mm';
 const DATE_TIME_FORMAT = 'DD/MM/YY HH:mm';
 
 export {
-  START_ID_COUNTER,
   EVENT_TYPES,
   DESCRIPTIONS,
   CITIES,
