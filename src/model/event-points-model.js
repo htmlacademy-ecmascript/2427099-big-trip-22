@@ -1,19 +1,17 @@
-import { getEventPoints } from '../mock/event-points.js';
-
 export default class EventPointsModel {
   #eventPoints = [];
 
-  constructor() {
-    this.#eventPoints = getEventPoints();
+  constructor(service) {
+    this.#eventPoints = service.getEventPoints();
   }
 
-  get() {
+  get eventPoints() {
     return this.#eventPoints;
   }
 
   getById(id) {
     return (
-      this.#eventPoints.find((eventPoint) => eventPoint.id === id.toString()) || null
+      this.#eventPoints.find((eventPoint) => eventPoint.id === id) || null
     );
   }
 }

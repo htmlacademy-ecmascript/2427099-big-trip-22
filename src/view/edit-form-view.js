@@ -1,19 +1,9 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeEventDateTime } from '../utils.js';
 import { EVENT_TYPES } from '../constants.js';
 
-const BLANK_EVENT = {
-  'basePrice': 0,
-  'dateFrom': new Date().toISOString(),
-  'dateTo': new Date().toISOString(),
-  'destination': '',
-  isFavorite: false,
-  offers: [],
-  type: 'Flight'
-};
-
-function createOfferTemplate(offersByType) {
-  return offersByType.offers.map(({ id, title, price }) => (
+function createOfferTemplate(offers) {
+  return offers.map(({ id, title, price }) => (
     `
     <div class="event__offer-selector">
       <input
@@ -64,11 +54,9 @@ function createDestinationOptionTemplate(destinations) {
   )).join('');
 }
 
-function createEditFormTemplate(destinations, eventPoints, offers) {
-  const { type, basePrice, dateFrom, dateTo } = eventPoints;
-  const destinationItem = destinations.find((destination) => destination.id === eventPoints.destination);
-  const { id, name, description } = destinationItem;
-  const offersByType = offers.find((offer) => offer.type === type);
+function createEditFormTemplate(destinations, destination, eventPoint, offers) {
+  const { type, basePrice, dateFrom, dateTo } = eventPoint;
+  const { id, name, description } = destination;
   return (
     `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -122,12 +110,12 @@ function createEditFormTemplate(destinations, eventPoints, offers) {
           </button>
         </header>
         <section class="event__details">
-        ${offersByType.offers.length ? `
+        ${offers.length ? `
           <section class="event__section  event__section--offers">
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
           <div class="event__available-offers">
-            ${createOfferTemplate(offersByType)}
+            ${createOfferTemplate(offers)}
           </div>
           </section>
         ` : ''}
@@ -141,26 +129,32 @@ function createEditFormTemplate(destinations, eventPoints, offers) {
   );
 }
 
-export default class EditFormView {
-  constructor({ destinations, eventPoints = BLANK_EVENT, offers = [] }) {
-    this.destinations = destinations;
-    this.eventPoints = eventPoints;
-    this.offers = offers;
+export default class EditFormView extends AbstractView {
+  #destinations = [];
+  #destination = null;
+  #eventPoint = null;
+  #offers = [];
+  #onCloseClick = null;
+  #onFormSubmit = null;
+
+  constructor({ destinations, destination, eventPoint, offers, onCloseClick, onFormSubmit }) {
+    super();
+    this.#destinations = destinations;
+    this.#destination = destination;
+    this.#eventPoint = eventPoint;
+    this.#offers = offers;
+    this.#onCloseClick = onCloseClick;
+    this.#onFormSubmit = onFormSubmit;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onCloseClick);
+    this.element.querySelector('.event__save-btn').addEventListener('click', this.#submitEditForm);
   }
 
-  getTemplate() {
-    return createEditFormTemplate(this.destinations, this.eventPoints, this.offers);
+  get template() {
+    return createEditFormTemplate(this.#destinations, this.#destination, this.#eventPoint, this.#offers);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #submitEditForm = (evt) => {
+    evt.preventDefault();
+    this.#onFormSubmit();
+  };
 }

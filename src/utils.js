@@ -1,13 +1,6 @@
 import dayjs from 'dayjs';
 import { DATE_FORMAT, TIME_FORMAT, DATE_TIME_FORMAT, HOURS_PER_DAY, MINUTES_PER_HOUR } from './constants';
 
-const createIdGenerator = (startFrom) => {
-  let generatorId = startFrom;
-  return function() {
-    return ++generatorId;
-  };
-};
-
 const getRandomInteger = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
 const getRandomArrayElement = (elements) => elements[getRandomInteger(0, elements.length - 1)];
@@ -43,7 +36,6 @@ const getEventDuration = (dateFrom, dateTo) => {
 };
 
 export {
-  createIdGenerator,
   getRandomArrayElement,
   getRandomInteger,
   humanizeEventDate,
