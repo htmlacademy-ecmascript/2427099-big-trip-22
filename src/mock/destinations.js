@@ -1,5 +1,5 @@
-import { getRandomArrayElement, getRandomInteger } from '../utils.js';
-import { DESCRIPTIONS, CITIES, MIN_IMAGES_COUNT, MAX_IMAGES_COUNT } from '../constants.js';
+import { getRandomArrayElement, getRandomInteger } from '../utils/common.js';
+import { DESCRIPTIONS, CITIES, ImageCount } from '../constants.js';
 
 const createDestinationPicture = () => ({
   src: `https://loremflickr.com/248/152?random=${crypto.randomUUID()}`,
@@ -13,7 +13,7 @@ const createDestination = () => {
     id: crypto.randomUUID(),
     description: getRandomArrayElement(DESCRIPTIONS),
     name: city,
-    pictures: Array.from({ length: getRandomInteger(MIN_IMAGES_COUNT, MAX_IMAGES_COUNT) }, createDestinationPicture)
+    pictures: Array.from({ length: getRandomInteger(ImageCount.MIN, ImageCount.MAX) }, createDestinationPicture)
   };
 };
 

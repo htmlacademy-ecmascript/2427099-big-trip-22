@@ -14,7 +14,8 @@ const eventPointsModel = new EventPointsModel(mockService);
 const offersModel = new OffersModel(mockService);
 
 const headerPresenter = new HeaderPresenter({
-  headerContainer: siteTripMainElement
+  headerContainer: siteTripMainElement,
+  eventPointsModel
 });
 
 const tripPresenter = new TripPresenter({

@@ -1,5 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { humanizeEventDateTime } from '../utils.js';
+import { humanizeEventDateTime } from '../utils/event.js';
+import { capitalizeFirstLetter } from '../utils/common.js';
 import { EVENT_TYPES } from '../constants.js';
 
 function createOfferTemplate(offers) {
@@ -28,18 +29,18 @@ function createEventTypeTemplate(eventTypes, eventPointType) {
     `
     <div class="event__type-item">
       <input
-        id="event-type-${type.toLowerCase()}-1"
+        id="event-type-${type}-1"
         class="event__type-input  visually-hidden"
         type="radio"
         name="event-type"
-        value="${type.toLowerCase()}"
+        value="${type}"
         ${type === eventPointType ? 'checked' : ''}
       >
       <label
-        class="event__type-label event__type-label--${type.toLowerCase()}"
-        for="event-type-${type.toLowerCase()}-1"
+        class="event__type-label event__type-label--${type}"
+        for="event-type-${type}-1"
       >
-        ${type}
+        ${capitalizeFirstLetter(type)}
       </label>
     </div>
     `

@@ -1,8 +1,8 @@
 import { createDestination } from '../mock/destinations.js';
 import { createOffer } from '../mock/offers.js';
 import { createEventPoint } from '../mock/event-points.js';
-import { EVENT_TYPES, CITIES, MIN_OFFERS_COUNT, MAX_OFFERS_COUNT } from '../constants.js';
-import { getRandomArrayElement, getRandomInteger } from '../utils.js';
+import { EVENT_TYPES, CITIES, OffersCount } from '../constants.js';
+import { getRandomArrayElement, getRandomInteger } from '../utils/common.js';
 
 export default class MockService {
   destinations = [];
@@ -34,7 +34,7 @@ export default class MockService {
   generateOffers() {
     return EVENT_TYPES.map((type) => ({
       type,
-      offers: Array.from({ length: getRandomInteger(MIN_OFFERS_COUNT, MAX_OFFERS_COUNT)}, createOffer)
+      offers: Array.from({ length: getRandomInteger(OffersCount.MIN, OffersCount.MAX)}, createOffer)
     }));
   }
 
