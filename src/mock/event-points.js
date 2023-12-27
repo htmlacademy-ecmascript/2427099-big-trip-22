@@ -1,21 +1,19 @@
-import { getRandomInteger } from '../utils.js';
+import { getRandomInteger } from '../utils/common.js';
 import {
-  MIN_PRICE_VALUE,
-  MAX_PRICE_VALUE,
-  MIN_MINUTES,
-  MAX_MINUTES
+  PriceValue,
+  Time
 } from '../constants.js';
 
 const getRandomDate = () => {
   const currentDate = new Date();
-  const minutesToAdd = getRandomInteger(MIN_MINUTES, MAX_MINUTES);
+  const minutesToAdd = getRandomInteger(Time.MIN_MINUTES, Time.MAX_MINUTES);
   currentDate.setMinutes(currentDate.getMinutes() + minutesToAdd);
   return currentDate.toISOString();
 };
 
 const createEventPoint = (type, destinationId, offerIds) => ({
   id: crypto.randomUUID(),
-  basePrice: getRandomInteger(MIN_PRICE_VALUE, MAX_PRICE_VALUE),
+  basePrice: getRandomInteger(PriceValue.MIN, PriceValue.MAX),
   dateFrom: new Date().toISOString(),
   dateTo: getRandomDate(),
   destination: destinationId,

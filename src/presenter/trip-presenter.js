@@ -1,5 +1,6 @@
 import { render, replace } from '../framework/render.js';
 import EditFormView from '../view/edit-form-view.js';
+import EmptyEventPointsView from '../view/empty-event-points-view.js';
 import ListSortView from '../view/list-sort-view.js';
 import TripListView from '../view/trip-list-view.js';
 import TripPointView from '../view/trip-point-view.js';
@@ -23,6 +24,12 @@ export default class TripPresenter {
 
   init() {
     this.#eventPoints = [...this.#eventPointsModel.eventPoints];
+
+    if (!this.#eventPoints.length) {
+      render(new EmptyEventPointsView(), this.#tripContainer);
+      return;
+    }
+
     this.#destinations = [...this.#destinationModel.destinations];
 
     render(new ListSortView(), this.#tripContainer);

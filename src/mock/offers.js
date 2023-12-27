@@ -1,14 +1,13 @@
-import { getRandomArrayElement, getRandomInteger } from '../utils.js';
+import { getRandomArrayElement, getRandomInteger } from '../utils/common.js';
 import {
-  MIN_PRICE_VALUE,
-  MAX_PRICE_VALUE,
+  PriceValue,
   OFFERS_TITLES
 } from '../constants.js';
 
 const createOffer = () => ({
   id: crypto.randomUUID(),
   title: getRandomArrayElement(OFFERS_TITLES),
-  price: getRandomInteger(MIN_PRICE_VALUE, MAX_PRICE_VALUE)
+  price: getRandomInteger(PriceValue.MIN, PriceValue.MAX)
 });
 
 export { createOffer };
