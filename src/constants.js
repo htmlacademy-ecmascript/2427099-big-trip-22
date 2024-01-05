@@ -85,6 +85,11 @@ const FilterType = {
   PAST: 'past'
 };
 
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
+
 export {
   EVENT_TYPES,
   DESCRIPTIONS,
@@ -96,5 +101,6 @@ export {
   OFFERS_TITLES,
   DateTimeFormat,
   SortTypes,
-  FilterType
+  FilterType,
+  Mode
 };
