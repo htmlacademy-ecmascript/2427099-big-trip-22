@@ -73,7 +73,7 @@ const SortTypes = [
   },
   {
     type: 'offers',
-    isDisabled: false,
+    isDisabled: true,
     isChecked: false,
   }
 ];
