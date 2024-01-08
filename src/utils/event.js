@@ -49,6 +49,8 @@ const isFutureDate = (dueDate) => {
   return targetDate.isAfter(currentDate);
 };
 
+const sortByDate = (eventA, eventB) => dayjs(eventA.dateFrom).diff(dayjs(eventB.dateFrom));
+
 const sortByPrice = (eventA, eventB) => eventB.basePrice - eventA.basePrice;
 
 const sortByTime = (eventA, eventB) => {
@@ -68,6 +70,7 @@ export {
   isFutureDate,
   sortByPrice,
   sortByTime,
+  sortByDate
 };
 
 

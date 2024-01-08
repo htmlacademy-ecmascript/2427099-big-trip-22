@@ -1,7 +1,7 @@
 import { SortTypes } from '../constants.js';
 import { render } from '../framework/render.js';
 import { updateItem } from '../utils/common.js';
-import { sortByTime, sortByPrice } from '../utils/event.js';
+import { sortByTime, sortByPrice, sortByDate } from '../utils/event.js';
 import EmptyEventPointsView from '../view/empty-event-points-view.js';
 import ListSortView from '../view/list-sort-view.js';
 import TripListView from '../view/trip-list-view.js';
@@ -15,7 +15,6 @@ export default class TripPresenter {
   #tripListComponent = new TripListView();
   #sortComponent = null;
   #currentSortType = SortTypes[0].type;
-  #sourcedEventPoints = [];
   #eventPoints = [];
   #pointsPresenter = new Map();
 
@@ -28,7 +27,6 @@ export default class TripPresenter {
 
   init() {
     this.#eventPoints = [...this.#eventPointsModel.eventPoints];
-    this.#sourcedEventPoints = [...this.#eventPointsModel.eventPoints];
 
     if (!this.#eventPoints.length) {
       this.#renderEmptyList();
@@ -41,14 +39,13 @@ export default class TripPresenter {
 
   #handleDataChange = (updatedPoint) => {
     this.#eventPoints = updateItem(this.#eventPoints, updatedPoint);
-    this.#sourcedEventPoints = updateItem(this.#sourcedEventPoints, updatedPoint);
     this.#pointsPresenter.get(updatedPoint.id).init(updatedPoint);
   };
 
   #sortEventPoints(sortType) {
     switch(sortType) {
       case 'day':
-        this.#eventPoints = [...this.#sourcedEventPoints];
+        this.#eventPoints.sort(sortByDate);
         break;
       case 'time':
         this.#eventPoints.sort(sortByTime);
