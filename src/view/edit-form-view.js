@@ -78,9 +78,19 @@ function createDestinationOptionsTemplate(destinations) {
   )).join('');
 }
 
-function createEditFormTemplate(destinations, destination, eventPoint, offers) {
+function createPictureTemplate(pictures) {
+  return pictures.map((picture) => (
+    `
+    <img class="event__photo" src="${picture.src}" alt="${picture.description}">
+    `
+  )).join('');
+}
+
+function createEditFormTemplate({destinations, eventPoint, offers}) {
   const { type, basePrice, dateFrom, dateTo } = eventPoint;
-  const { id, name, description } = destination;
+  const destination = destinations.find((item) => item.id === eventPoint.destination);
+  const { id, name, description, pictures } = destination;
+  const offersByType = offers.find((item) => item.type === type).offers;
   return (
     `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -88,7 +98,7 @@ function createEditFormTemplate(destinations, destination, eventPoint, offers) {
           ${createEventTypeTemplate(type)}
 
           <div class="event__field-group  event__field-group--destination">
-            <label class="event__label  event__type-output" for="event-destination-1">
+            <label class="event__label  event__type-output" for="event-destination-${id}">
               ${type}
             </label>
             <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${name}" list="destination-list-1">
@@ -120,18 +130,25 @@ function createEditFormTemplate(destinations, destination, eventPoint, offers) {
           </button>
         </header>
         <section class="event__details">
-        ${offers.length ? `
+        ${offersByType.length ? `
           <section class="event__section  event__section--offers">
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
           <div class="event__available-offers">
-            ${createOfferTemplate(offers, eventPoint.offers)}
+            ${createOfferTemplate(offersByType, eventPoint.offers)}
           </div>
           </section>
         ` : ''}
           <section class="event__section  event__section--destination">
             <h3 class="event__section-title  event__section-title--destination">Destination</h3>
             <p class="event__destination-description">${description}</p>
+            ${pictures.length ? `
+            <div class="event__photos-container">
+              <div class="event__photos-tape">
+                ${createPictureTemplate(pictures)}
+              </div>
+            </div>
+            ` : ''}
           </section>
         </section>
       </form>
@@ -141,16 +158,14 @@ function createEditFormTemplate(destinations, destination, eventPoint, offers) {
 
 export default class EditFormView extends AbstractStatefulView {
   #destinations = [];
-  #destination = null;
   #offers = [];
   #onCloseClick = null;
   #onFormSubmit = null;
 
-  constructor({ destinations, destination, eventPoint, offers, onCloseClick, onFormSubmit }) {
+  constructor({ destinations, eventPoint, offers, onCloseClick, onFormSubmit }) {
     super();
     this._setState(EditFormView.parsePointToState(eventPoint));
     this.#destinations = destinations;
-    this.#destination = destination;
     this.#offers = offers;
     this.#onCloseClick = onCloseClick;
     this.#onFormSubmit = onFormSubmit;
@@ -159,7 +174,11 @@ export default class EditFormView extends AbstractStatefulView {
   }
 
   get template() {
-    return createEditFormTemplate(this.#destinations, this.#destination, this._state, this.#offers);
+    return createEditFormTemplate({
+      destinations: this.#destinations,
+      eventPoint: this._state,
+      offers: this.#offers
+    });
   }
 
   reset(point) {
@@ -191,7 +210,8 @@ export default class EditFormView extends AbstractStatefulView {
 
   #destinationOptionHandler = (evt) => {
     const selectedDestination = this.#destinations.find((item) => item.name === evt.target.value);
-    this.updateElement({destination: selectedDestination.id});
+    const selectedDestinationId = selectedDestination ? selectedDestination.id : null;
+    this.updateElement({destination: selectedDestinationId});
   };
 
   #offersChangeHandler = () => {
