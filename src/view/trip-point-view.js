@@ -17,6 +17,7 @@ function createOfferTemplate(offers) {
 function createTripPointTemplate(destination, eventPoint, offers) {
   const { name } = destination;
   const { type, basePrice, isFavorite, dateFrom, dateTo } = eventPoint;
+  const eventOffers = offers.filter((offer) => eventPoint.offers.includes(offer.id));
   const isFavoriteClass = isFavorite ? 'event__favorite-btn--active' : '';
   return (
     `<li class="trip-events__item">
@@ -39,7 +40,7 @@ function createTripPointTemplate(destination, eventPoint, offers) {
         </p>
         <h4 class="visually-hidden">Offers:</h4>
         <ul class="event__selected-offers">
-          ${createOfferTemplate(offers)}
+          ${createOfferTemplate(eventOffers)}
         </ul>
         <button class="event__favorite-btn ${isFavoriteClass}" type="button">
           <span class="visually-hidden">Add to favorite</span>

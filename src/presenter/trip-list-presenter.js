@@ -7,7 +7,7 @@ import ListSortView from '../view/list-sort-view.js';
 import TripListView from '../view/trip-list-view.js';
 import PointPresenter from './point-presenter.js';
 
-export default class TripPresenter {
+export default class TripListPresenter {
   #tripContainer = null;
   #destinationModel = null;
   #eventPointsModel = null;

@@ -24,7 +24,7 @@ const getEventDuration = (dateFrom, dateTo) => {
     durationString += `${hours}H `;
   }
 
-  if (minutes > 0 || (days === 0 && hours === 0)) {
+  if (minutes > 0) {
     durationString += `${minutes}M `;
   }
 

@@ -1,5 +1,5 @@
 import HeaderPresenter from '../presenter/header-presenter.js';
-import TripPresenter from '../presenter/trip-presenter.js';
+import TripListPresenter from './trip-list-presenter.js';
 import MockService from '../service/mock-service.js';
 import DestinationModel from '../model/destination-model.js';
 import EventPointsModel from '../model/event-points-model.js';
@@ -18,7 +18,7 @@ const headerPresenter = new HeaderPresenter({
   eventPointsModel
 });
 
-const tripPresenter = new TripPresenter({
+const tripListPresenter = new TripListPresenter({
   tripContainer: siteTripEventsElement,
   destinationModel,
   eventPointsModel,
@@ -28,6 +28,6 @@ const tripPresenter = new TripPresenter({
 export default class MainPresenter {
   init() {
     headerPresenter.init();
-    tripPresenter.init();
+    tripListPresenter.init();
   }
 }
