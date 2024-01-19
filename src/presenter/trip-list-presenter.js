@@ -25,6 +25,10 @@ export default class TripListPresenter {
     this.#offersModel = offersModel;
   }
 
+  get eventPoints() {
+    return this.#eventPointsModel.eventPoints;
+  }
+
   init() {
     this.#eventPoints = [...this.#eventPointsModel.eventPoints];
 

@@ -1,7 +1,10 @@
-export default class EventPointsModel {
+import Observable from '../framework/observable.js';
+
+export default class EventPointsModel extends Observable {
   #eventPoints = [];
 
   constructor(service) {
+    super();
     this.#eventPoints = service.getEventPoints();
   }
 
