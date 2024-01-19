@@ -50,33 +50,21 @@ const CITIES = ['Paris', 'Moscow', 'London', 'Tokio', 'New York', 'Berlin', 'Ams
 
 const OFFERS_TITLES = ['Add luggage', 'Switch to comfort class', 'Add meal', 'Choose seats', 'Travel by train'];
 
-const SortTypes = [
-  {
-    type: 'day',
-    isDisabled: false,
-    isChecked: true,
-  },
-  {
-    type: 'event',
-    isDisabled: true,
-    isChecked: false,
-  },
-  {
-    type: 'time',
-    isDisabled: false,
-    isChecked: false,
-  },
-  {
-    type: 'price',
-    isDisabled: false,
-    isChecked: false,
-  },
-  {
-    type: 'offers',
-    isDisabled: true,
-    isChecked: false,
-  }
-];
+const SortTypes = {
+  DAY: 'day',
+  EVENT: 'event',
+  TIME: 'time',
+  PRICE: 'price',
+  OFFERS: 'offers'
+};
+
+const enabledSortType = {
+  [SortTypes.DAY]: true,
+  [SortTypes.EVENT]: false,
+  [SortTypes.TIME]: true,
+  [SortTypes.PRICE]: true,
+  [SortTypes.OFFERS]: false
+};
 
 const FilterType = {
   EVERYTHING: 'everything',
@@ -101,6 +89,7 @@ export {
   OFFERS_TITLES,
   DateTimeFormat,
   SortTypes,
+  enabledSortType,
   FilterType,
   Mode
 };

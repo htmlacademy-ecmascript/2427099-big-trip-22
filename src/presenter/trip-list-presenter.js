@@ -1,11 +1,11 @@
 import { SortTypes } from '../constants.js';
 import { render } from '../framework/render.js';
 import { updateItem } from '../utils/common.js';
-import { sortByTime, sortByPrice, sortByDate } from '../utils/event.js';
+import { sorting } from '../utils/sort.js';
 import EmptyEventPointsView from '../view/empty-event-points-view.js';
-import ListSortView from '../view/list-sort-view.js';
 import TripListView from '../view/trip-list-view.js';
 import PointPresenter from './point-presenter.js';
+import SortPresenter from './sort-presenter.js';
 
 export default class TripListPresenter {
   #tripContainer = null;
@@ -13,8 +13,8 @@ export default class TripListPresenter {
   #eventPointsModel = null;
   #offersModel = null;
   #tripListComponent = new TripListView();
-  #sortComponent = null;
-  #currentSortType = SortTypes[0].type;
+  #currentSortType = null;
+  #defaultSortType = SortTypes.DAY;
   #eventPoints = [];
   #pointsPresenter = new Map();
 
@@ -43,36 +43,24 @@ export default class TripListPresenter {
   };
 
   #sortEventPoints(sortType) {
-    switch(sortType) {
-      case 'day':
-        this.#eventPoints.sort(sortByDate);
-        break;
-      case 'time':
-        this.#eventPoints.sort(sortByTime);
-        break;
-      case 'price':
-        this.#eventPoints.sort(sortByPrice);
-        break;
-    }
-
-    this.#currentSortType = sortType.type;
+    this.#currentSortType = sortType;
+    this.#eventPoints = sorting[this.#currentSortType](this.#eventPoints);
   }
 
   #handleSortTypeChange = (sortType) => {
-    if (this.#currentSortType === sortType) {
-      return;
-    }
-
     this.#sortEventPoints(sortType);
     this.#clearEventPointsList();
-    this.#renderTripList();
+    this.#renderPoints();
   };
 
   #renderSort() {
-    this.#sortComponent = new ListSortView({
-      onSortTypeChange: this.#handleSortTypeChange
+    const sortPresenter = new SortPresenter({
+      container: this.#tripContainer,
+      defaultSortType: this.#defaultSortType,
+      sortTypeChangeHandler: this.#handleSortTypeChange
     });
-    render(this.#sortComponent, this.#tripContainer);
+
+    sortPresenter.init();
   }
 
   #clearEventPointsList() {
@@ -82,7 +70,7 @@ export default class TripListPresenter {
 
   #renderTripList() {
     render(this.#tripListComponent, this.#tripContainer);
-    this.#renderPoints();
+    this.#handleSortTypeChange(this.#defaultSortType);
   }
 
   #handleModeChange = () => {

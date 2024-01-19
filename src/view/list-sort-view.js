@@ -1,51 +1,33 @@
-import AbstractView from '../framework/view/abstract-view.js';
-import { SortTypes } from '../constants.js';
+import RadioListView from './radio-list-view.js';
 
 function createSortTypeListTemplate(types) {
-  return types.reduce((markup, {type, isDisabled, isChecked}) => `${markup}
-    <div class="trip-sort__item  trip-sort__item--${type}">
+  return types.reduce((markup, {sortType, isChecked, isDisabled}) => `${markup}
+    <div class="trip-sort__item  trip-sort__item--${sortType}">
       <input
-        id="sort-${type}"
+        id="sort-${sortType}"
         class="trip-sort__input visually-hidden"
         type="radio"
         name="trip-sort"
-        value="sort-${type}"
+        value="sort-${sortType}"
+        data-type="${sortType}"
         ${isDisabled ? 'disabled' : ''}
         ${isChecked ? 'checked' : ''}
       >
-      <label class="trip-sort__btn" for="sort-${type}" data-sort-type="${type}">${type}</label>
+      <label class="trip-sort__btn" for="sort-${sortType}">${sortType}</label>
     </div>
   `, '');
 }
 
-function createListSortTemplate() {
+function createListSortTemplate(types) {
   return (
     `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
-      ${createSortTypeListTemplate(SortTypes)}
+      ${createSortTypeListTemplate(types)}
     </form>`
   );
 }
 
-export default class ListSortView extends AbstractView {
-  #handleSortTypeChange = null;
-
-  constructor({onSortTypeChange}) {
-    super();
-    this.#handleSortTypeChange = onSortTypeChange;
-
-    this.element.addEventListener('click', this.#sortTypeChangeHandler);
-  }
-
+export default class ListSortView extends RadioListView {
   get template() {
-    return createListSortTemplate();
+    return createListSortTemplate(this._types);
   }
-
-  #sortTypeChangeHandler = (evt) => {
-    if (evt.target.tagName !== 'LABEL') {
-      return;
-    }
-
-    evt.preventDefault();
-    this.#handleSortTypeChange(evt.target.dataset.sortType);
-  };
 }
