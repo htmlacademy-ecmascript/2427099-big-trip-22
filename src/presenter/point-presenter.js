@@ -1,5 +1,5 @@
 import { render, replace, remove } from '../framework/render.js';
-import { Mode } from '../constants.js';
+import { Mode, UserAction, UpdateType } from '../constants.js';
 import EditFormView from '../view/edit-form-view.js';
 import TripPointView from '../view/trip-point-view.js';
 
@@ -41,7 +41,8 @@ export default class PointPresenter {
       eventPoint: this.#point,
       offers: this.#offersModel.offers,
       onCloseClick: this.#pointCloseEditHandler,
-      onFormSubmit: this.#pointEditSubmitHandler
+      onFormSubmit: this.#pointEditSubmitHandler,
+      onDeleteClick: this.#pointDeleteHandler
     });
 
     if (prevPointComponent === null || prevEditPointComponent === null) {
@@ -104,12 +105,28 @@ export default class PointPresenter {
   };
 
   #pointEditSubmitHandler = (point) => {
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      UpdateType.MINOR,
+      point
+    );
     this.#replaceFormToPoint();
-    this.#handleDataChange(point);
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 
   #pointFavoriteHandler = () => {
-    this.#handleDataChange({...this.#point, isFavorite: !this.#point.isFavorite});
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      UpdateType.PATCH,
+      {...this.#point, isFavorite: !this.#point.isFavorite}
+    );
+  };
+
+  #pointDeleteHandler = () => {
+    this.#handleDataChange(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      this.#point
+    );
   };
 }

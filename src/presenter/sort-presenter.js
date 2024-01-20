@@ -5,15 +5,15 @@ import ListSortView from '../view/list-sort-view.js';
 export default class SortPresenter {
   #container = null;
   #sortTypes = [];
-  #defaultSortType = null;
+  #currentSortType = null;
   #sortTypeChangeHandler = null;
 
-  constructor({ container, defaultSortType, sortTypeChangeHandler }) {
+  constructor({ container, currentSortType, sortTypeChangeHandler }) {
     this.#container = container;
-    this.#defaultSortType = defaultSortType;
+    this.#currentSortType = currentSortType;
     this.#sortTypes = Object.values(SortTypes).map((sortType) => ({
       sortType,
-      isChecked: sortType === this.#defaultSortType,
+      isChecked: sortType === this.#currentSortType,
       isDisabled: !enabledSortType[sortType]
     }));
     this.#sortTypeChangeHandler = sortTypeChangeHandler;

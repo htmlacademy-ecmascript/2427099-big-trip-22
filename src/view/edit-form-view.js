@@ -163,16 +163,18 @@ export default class EditFormView extends AbstractStatefulView {
   #offers = [];
   #onCloseClick = null;
   #onFormSubmit = null;
+  #onDeleteClick = null;
   #datePickerFrom = null;
   #datePickerTo = null;
 
-  constructor({ destinations, eventPoint, offers, onCloseClick, onFormSubmit }) {
+  constructor({ destinations, eventPoint, offers, onCloseClick, onFormSubmit, onDeleteClick }) {
     super();
     this._setState(EditFormView.parsePointToState(eventPoint));
     this.#destinations = destinations;
     this.#offers = offers;
     this.#onCloseClick = onCloseClick;
     this.#onFormSubmit = onFormSubmit;
+    this.#onDeleteClick = onDeleteClick;
 
     this._restoreHandlers();
   }
@@ -206,12 +208,10 @@ export default class EditFormView extends AbstractStatefulView {
   _restoreHandlers() {
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onCloseClick);
     this.element.querySelector('.event__save-btn').addEventListener('click', this.#submitEditFormHandler);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#pointDeleteHandler);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeOptionHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationOptionHandler);
-    const offersElement = this.element.querySelector('.event__available-offers');
-    if (offersElement) {
-      offersElement.addEventListener('change', this.#offersChangeHandler);
-    }
+    this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offersChangeHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
 
     this.#setDatePickers();
@@ -220,6 +220,11 @@ export default class EditFormView extends AbstractStatefulView {
   #submitEditFormHandler = (evt) => {
     evt.preventDefault();
     this.#onFormSubmit(EditFormView.parseStateToPoint(this._state));
+  };
+
+  #pointDeleteHandler = (evt) => {
+    evt.preventDefault();
+    this.#onDeleteClick(EditFormView.parseStateToPoint(this._state));
   };
 
   #typeOptionHandler = (evt) => {
