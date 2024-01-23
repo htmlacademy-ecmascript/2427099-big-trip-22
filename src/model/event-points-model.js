@@ -1,10 +1,13 @@
 import Observable from '../framework/observable.js';
+import { updateItem } from '../utils/common.js';
 
 export default class EventPointsModel extends Observable {
+  #service = null;
   #eventPoints = [];
 
   constructor(service) {
     super();
+    this.#service = service;
     this.#eventPoints = service.getEventPoints();
   }
 
@@ -18,43 +21,24 @@ export default class EventPointsModel extends Observable {
     );
   }
 
-  updatePoint(updateType, update) {
-    const index = this.#eventPoints.findIndex((point) => point.id === update.id);
-
-    if (index === -1) {
-      throw new Error('Cannot update unexisting point');
-    }
-
-    this.#eventPoints = [
-      ...this.#eventPoints.slice(0, index),
-      update,
-      ...this.#eventPoints.slice(index + 1)
-    ];
-
-    this._notify(updateType, update);
+  update(updateType, point) {
+    const updatedPoint = this.#service.updatePoint(point);
+    this.#eventPoints = updateItem(this.#eventPoints, updatedPoint);
+    this._notify(updateType, updatedPoint);
   }
 
-  addPoint(updateType, update) {
+  add(updateType, point) {
+    const addedPoint = this.#service.addPoint(point);
     this.#eventPoints = [
-      update,
-      ...this.#eventPoints
+      ...this.#eventPoints,
+      addedPoint
     ];
-
-    this._notify(updateType, update);
+    this._notify(updateType, addedPoint);
   }
 
-  deletePoint(updateType, update) {
-    const index = this.#eventPoints.findIndex((point) => point.id === update.id);
-
-    if (index === -1) {
-      throw new Error('Cannot delete unexisting point');
-    }
-
-    this.#eventPoints = [
-      ...this.#eventPoints.slice(0, index),
-      ...this.#eventPoints.slice(index + 1)
-    ];
-
+  delete(updateType, point) {
+    this.#service.deletePoint(point);
+    this.#eventPoints = this.#eventPoints.filter((eventPoint) => eventPoint.id !== point.id);
     this._notify(updateType);
   }
 }

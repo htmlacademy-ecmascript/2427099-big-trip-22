@@ -3,7 +3,7 @@ import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import { humanizeEventDateTime } from '../utils/event.js';
 import { capitalizeFirstLetter } from '../utils/common.js';
-import { EVENT_TYPES } from '../constants.js';
+import { EVENT_TYPES, Mode } from '../constants.js';
 
 function createOfferTemplate(offers, selectedOffers) {
   return offers.map(({ id, title, price }) => (
@@ -88,22 +88,75 @@ function createPictureTemplate(pictures) {
   )).join('');
 }
 
-function createEditFormTemplate({destinations, state, offers}) {
+function rollupTemplate() {
+  return (
+    `
+    <button class="event__rollup-btn" type="button">
+      <span class="visually-hidden">Open event</span>
+    </button>
+    `
+  );
+}
+
+function createOffersSectionTemplate(offersByType, offers) {
+  return offersByType.length ? `
+    <section class="event__section  event__section--offers">
+      <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+
+      <div class="event__available-offers">
+        ${createOfferTemplate(offersByType, offers)}
+      </div>
+    </section>
+  ` : '';
+}
+
+function createDestinationInfoTemplate(description, pictures) {
+  return (
+    `
+    <section class="event__section  event__section--destination">
+      <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+      <p class="event__destination-description">${description}</p>
+      ${pictures.length ? `
+      <div class="event__photos-container">
+        <div class="event__photos-tape">
+          ${createPictureTemplate(pictures)}
+        </div>
+      </div>
+      ` : ''}
+      </section>
+    `
+  );
+}
+
+function createEditFormTemplate({destinations, state, offers, modeType}) {
+  const isAdditingType = modeType === Mode.ADDITING;
   const { type, basePrice, dateFrom, dateTo } = state;
-  const destination = destinations.find((item) => item.id === state.destination);
-  const { id, name, description, pictures } = destination;
-  const offersByType = offers.find((item) => item.type === type).offers;
+
+  let destination, name, description, pictures, offersByType;
+  if (modeType === Mode.EDITING) {
+    destination = destinations.find((item) => item.id === state.destination);
+    ({ name, description, pictures } = destination);
+    offersByType = offers.find((item) => item.type === type).offers;
+  }
+
   return (
     `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
         <header class="event__header">
-          ${createEventTypeTemplate(type)}
+          ${createEventTypeTemplate(isAdditingType ? 'Flight' : type)}
 
           <div class="event__field-group  event__field-group--destination">
-            <label class="event__label  event__type-output" for="event-destination-${id}">
-              ${type}
+            <label class="event__label  event__type-output" for="event-destination-1">
+              ${isAdditingType ? 'Flight' : type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${name}" list="destination-list-1">
+            <input
+              class="event__input  event__input--destination"
+              id="event-destination-1"
+              type="text"
+              name="event-destination"
+              value="${isAdditingType ? '' : name}"
+              list="destination-list-1"
+            >
             <datalist id="destination-list-1">
               ${createDestinationOptionsTemplate(destinations)}
             </datalist>
@@ -111,10 +164,22 @@ function createEditFormTemplate({destinations, state, offers}) {
 
           <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-1">From</label>
-            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${humanizeEventDateTime(dateFrom)}">
+            <input
+              class="event__input  event__input--time"
+              id="event-start-time-1"
+              type="text"
+              name="event-start-time"
+              value="${isAdditingType ? '' : humanizeEventDateTime(dateFrom)}"
+            >
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">To</label>
-            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${humanizeEventDateTime(dateTo)}">
+            <input
+              class="event__input  event__input--time"
+              id="event-end-time-1"
+              type="text"
+              name="event-end-time"
+              value="${isAdditingType ? '' : humanizeEventDateTime(dateTo)}"
+            >
           </div>
 
           <div class="event__field-group  event__field-group--price">
@@ -122,43 +187,29 @@ function createEditFormTemplate({destinations, state, offers}) {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+            <input
+              class="event__input  event__input--price"
+              id="event-price-1"
+              type="text"
+              name="event-price"
+              value="${isAdditingType ? 0 : basePrice}"
+            >
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Delete</button>
-          <button class="event__rollup-btn" type="button">
-            <span class="visually-hidden">Open event</span>
-          </button>
+          <button class="event__reset-btn" type="reset">${isAdditingType ? 'Cancel' : 'Delete'}</button>
+          ${isAdditingType ? '' : rollupTemplate()}
         </header>
         <section class="event__details">
-        ${offersByType.length ? `
-          <section class="event__section  event__section--offers">
-          <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
-          <div class="event__available-offers">
-            ${createOfferTemplate(offersByType, state.offers)}
-          </div>
-          </section>
-        ` : ''}
-          <section class="event__section  event__section--destination">
-            <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-            <p class="event__destination-description">${description}</p>
-            ${pictures.length ? `
-            <div class="event__photos-container">
-              <div class="event__photos-tape">
-                ${createPictureTemplate(pictures)}
-              </div>
-            </div>
-            ` : ''}
-          </section>
+          ${createOffersSectionTemplate(offersByType, state.offers)}
+          ${createDestinationInfoTemplate(description, pictures)}
         </section>
       </form>
     </li>`
   );
 }
 
-export default class EditFormView extends AbstractStatefulView {
+export default class PointEditView extends AbstractStatefulView {
   #destinations = [];
   #offers = [];
   #onCloseClick = null;
@@ -166,15 +217,25 @@ export default class EditFormView extends AbstractStatefulView {
   #onDeleteClick = null;
   #datePickerFrom = null;
   #datePickerTo = null;
+  #modeType = null;
 
-  constructor({ destinations, eventPoint, offers, onCloseClick, onFormSubmit, onDeleteClick }) {
+  constructor({
+    eventPoint,
+    destinations,
+    offers,
+    onCloseClick,
+    onFormSubmit,
+    onDeleteClick,
+    modeType = Mode.EDITING,
+  }) {
     super();
-    this._setState(EditFormView.parsePointToState(eventPoint));
+    this._setState(PointEditView.parsePointToState(eventPoint));
     this.#destinations = destinations;
     this.#offers = offers;
     this.#onCloseClick = onCloseClick;
     this.#onFormSubmit = onFormSubmit;
     this.#onDeleteClick = onDeleteClick;
+    this.#modeType = modeType;
 
     this._restoreHandlers();
   }
@@ -183,7 +244,8 @@ export default class EditFormView extends AbstractStatefulView {
     return createEditFormTemplate({
       destinations: this.#destinations,
       state: this._state,
-      offers: this.#offers
+      offers: this.#offers,
+      modeType: this.#modeType,
     });
   }
 
@@ -201,12 +263,14 @@ export default class EditFormView extends AbstractStatefulView {
 
   reset(point) {
     this.updateElement(
-      EditFormView.parsePointToState(point),
+      PointEditView.parsePointToState(point),
     );
   }
 
   _restoreHandlers() {
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onCloseClick);
+    if (this.#modeType === Mode.EDITING) {
+      this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onCloseClick);
+    }
     this.element.querySelector('.event__save-btn').addEventListener('click', this.#submitEditFormHandler);
     this.element.querySelector('.event__reset-btn').addEventListener('click', this.#pointDeleteHandler);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeOptionHandler);
@@ -219,12 +283,12 @@ export default class EditFormView extends AbstractStatefulView {
 
   #submitEditFormHandler = (evt) => {
     evt.preventDefault();
-    this.#onFormSubmit(EditFormView.parseStateToPoint(this._state));
+    this.#onFormSubmit(PointEditView.parseStateToPoint(this._state));
   };
 
   #pointDeleteHandler = (evt) => {
     evt.preventDefault();
-    this.#onDeleteClick(EditFormView.parseStateToPoint(this._state));
+    this.#onDeleteClick(PointEditView.parseStateToPoint(this._state));
   };
 
   #typeOptionHandler = (evt) => {

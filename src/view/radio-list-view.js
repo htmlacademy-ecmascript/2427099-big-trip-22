@@ -14,6 +14,6 @@ export default class RadioListView extends AbstractView {
 
   #typeChangeHandler = (evt) => {
     evt.preventDefault();
-    this._handleTypeChange?.(evt.target.dataset.type);
+    this._handleTypeChange(evt.target.dataset.type);
   };
 }

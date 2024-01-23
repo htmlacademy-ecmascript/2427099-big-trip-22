@@ -16,7 +16,7 @@ const PriceValue = {
 const Time = {
   MIN_MINUTES: 1,
   MAX_MINUTES: 2440,
-  HOURS_PER_DAY: 24,
+  MINUTES_PER_DAY: 1440,
   MINUTES_PER_HOUR: 60
 };
 
@@ -76,6 +76,7 @@ const FilterType = {
 const Mode = {
   DEFAULT: 'DEFAULT',
   EDITING: 'EDITING',
+  ADDITING: 'ADDITING'
 };
 
 const UserAction = {
@@ -88,6 +89,13 @@ const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR'
+};
+
+const NoPointsTextType = {
+  [FilterType.EVERYTHING]: 'Click New Event to create your first point',
+  [FilterType.FUTURE]: 'There are no future points now',
+  [FilterType.PRESENT]: 'There are no present points now',
+  [FilterType.PAST]: 'There are no past points now',
 };
 
 export {
@@ -105,5 +113,6 @@ export {
   FilterType,
   Mode,
   UserAction,
-  UpdateType
+  UpdateType,
+  NoPointsTextType
 };

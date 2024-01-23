@@ -1,7 +1,7 @@
-import AbstractView from '../framework/view/abstract-view.js';
+import RadioListView from './radio-list-view.js';
 
-function createFilterTypeTemplate(filter, isChecked) {
-  const { type, count } = filter;
+function createFilterTypeTemplate(filter) {
+  const { type, isChecked, isDisabled } = filter;
 
   return (
     `
@@ -13,8 +13,9 @@ function createFilterTypeTemplate(filter, isChecked) {
         type="radio"
         name="trip-filter"
         value="${type}"
+        data-type="${type}"
         ${isChecked ? 'checked' : ''}
-        ${count === 0 ? 'disabled' : ''}
+        ${isDisabled ? 'disabled' : ''}
       >
       <label class="trip-filters__filter-label" for="filter-${type}">${type}</label>
     </div>
@@ -24,7 +25,7 @@ function createFilterTypeTemplate(filter, isChecked) {
 
 function createListFilterTemplate(filterTypes) {
   const filterTypesTemplate = filterTypes
-    .map((filter, index) => createFilterTypeTemplate(filter, index === 0))
+    .map((filter) => createFilterTypeTemplate(filter))
     .join('');
 
   return (
@@ -42,15 +43,8 @@ function createListFilterTemplate(filterTypes) {
   );
 }
 
-export default class ListFilterView extends AbstractView {
-  #filters = null;
-
-  constructor({filters}) {
-    super();
-    this.#filters = filters;
-  }
-
+export default class ListFilterView extends RadioListView {
   get template() {
-    return createListFilterTemplate(this.#filters);
+    return createListFilterTemplate(this._types);
   }
 }

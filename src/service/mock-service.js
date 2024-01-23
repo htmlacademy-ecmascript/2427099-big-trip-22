@@ -56,4 +56,16 @@ export default class MockService {
       return createEventPoint(type, destination.id, offerIds);
     });
   }
+
+  updatePoint(updatePoint) {
+    return updatePoint;
+  }
+
+  addPoint(newPoint) {
+    return newPoint;
+  }
+
+  deletePoint(point) {
+    return point;
+  }
 }

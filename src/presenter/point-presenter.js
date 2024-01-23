@@ -1,6 +1,7 @@
 import { render, replace, remove } from '../framework/render.js';
 import { Mode, UserAction, UpdateType } from '../constants.js';
-import EditFormView from '../view/edit-form-view.js';
+import { isMinorChange } from '../utils/event.js';
+import PointEditView from '../view/point-edit-view.js';
 import TripPointView from '../view/trip-point-view.js';
 
 export default class PointPresenter {
@@ -36,7 +37,7 @@ export default class PointPresenter {
       onFavoriteClick: this.#pointFavoriteHandler
     });
 
-    this.#editPointComponent = new EditFormView({
+    this.#editPointComponent = new PointEditView({
       destinations: this.#destinationModel.destinations,
       eventPoint: this.#point,
       offers: this.#offersModel.offers,
@@ -105,9 +106,10 @@ export default class PointPresenter {
   };
 
   #pointEditSubmitHandler = (point) => {
+    const isMinorType = isMinorChange(point, this.#point) ? 'MINOR' : 'PATCH';
     this.#handleDataChange(
       UserAction.UPDATE_POINT,
-      UpdateType.MINOR,
+      isMinorType,
       point
     );
     this.#replaceFormToPoint();

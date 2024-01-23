@@ -1,10 +1,11 @@
-import { render } from '../framework/render.js';
+import { render, replace, remove } from '../framework/render.js';
 import { SortTypes, enabledSortType } from '../constants.js';
 import ListSortView from '../view/list-sort-view.js';
 
 export default class SortPresenter {
   #container = null;
   #sortTypes = [];
+  #sortComponent = null;
   #currentSortType = null;
   #sortTypeChangeHandler = null;
 
@@ -20,12 +21,22 @@ export default class SortPresenter {
   }
 
   init() {
-    render(
-      new ListSortView({
-        types: this.#sortTypes,
-        onTypeChange: this.#sortTypeChangeHandler
-      }),
-      this.#container
-    );
+    const prevSortComponent = this.#sortComponent;
+
+    this.#sortComponent = new ListSortView({
+      types: this.#sortTypes,
+      onTypeChange: this.#sortTypeChangeHandler
+    });
+
+    if (prevSortComponent === null) {
+      render(this.#sortComponent, this.#container);
+    } else {
+      replace(this.#sortComponent, prevSortComponent);
+      remove(prevSortComponent);
+    }
+  }
+
+  destroy() {
+    remove(this.#sortComponent);
   }
 }
