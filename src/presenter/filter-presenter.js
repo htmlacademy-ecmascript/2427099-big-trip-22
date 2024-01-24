@@ -21,9 +21,9 @@ export default class FilterPresenter {
     const eventPoints = this.#eventPointsModel.eventPoints;
 
     return Object.entries(filter).map(
-      ([filterType, filterPoints], index) => ({
+      ([filterType, filterPoints]) => ({
         type: filterType,
-        isChecked: index === 0,
+        isChecked: filterType === this.#filterModel.filter,
         isDisabled: !filterPoints(eventPoints).length
       })
     );
