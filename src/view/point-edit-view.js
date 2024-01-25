@@ -147,7 +147,7 @@ function createEditFormTemplate({destinations, state, offers, modeType}) {
               id="event-destination-1"
               type="text"
               name="event-destination"
-              value="${destination?.name ?? ''}"
+              value="${he.encode(destination?.name ?? '')}"
               list="destination-list-1"
             >
             <datalist id="destination-list-1">
