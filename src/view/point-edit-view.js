@@ -1,9 +1,10 @@
+import he from 'he';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import { humanizeEventDateTime } from '../utils/event.js';
 import { capitalizeFirstLetter } from '../utils/common.js';
-import { EVENT_TYPES, Mode } from '../constants.js';
+import { EVENT_TYPES, Mode, EMPTY_POINT } from '../constants.js';
 
 function createOfferTemplate(offers, selectedOffers) {
   return offers.map(({ id, title, price }) => (
@@ -98,8 +99,8 @@ function rollupTemplate() {
   );
 }
 
-function createOffersSectionTemplate(offersByType, offers) {
-  return offersByType.length ? `
+function createOffersSectionTemplate(isOffers, offersByType, offers) {
+  return isOffers ? `
     <section class="event__section  event__section--offers">
       <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
@@ -110,51 +111,43 @@ function createOffersSectionTemplate(offersByType, offers) {
   ` : '';
 }
 
-function createDestinationInfoTemplate(description, pictures) {
-  return (
-    `
-    <section class="event__section  event__section--destination">
+function createDestinationInfoTemplate(isDestination, destination) {
+  return isDestination || destination ?
+    `<section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-      <p class="event__destination-description">${description}</p>
-      ${pictures.length ? `
+      <p class="event__destination-description">${destination.description}</p>
       <div class="event__photos-container">
         <div class="event__photos-tape">
-          ${createPictureTemplate(pictures)}
+          ${createPictureTemplate(destination.pictures)}
         </div>
       </div>
-      ` : ''}
-      </section>
-    `
-  );
+    </section>` : '';
 }
 
 function createEditFormTemplate({destinations, state, offers, modeType}) {
   const isAdditingType = modeType === Mode.ADDITING;
   const { type, basePrice, dateFrom, dateTo } = state;
-
-  let destination, name, description, pictures, offersByType;
-  if (modeType === Mode.EDITING) {
-    destination = destinations.find((item) => item.id === state.destination);
-    ({ name, description, pictures } = destination);
-    offersByType = offers.find((item) => item.type === type).offers;
-  }
+  const destination = destinations.find((item) => item.id === state.destination);
+  const offersByType = offers.find((item) => item.type === type).offers;
+  const isOffers = offersByType.length > 0;
+  const isDestination = destination?.pictures.length > 0 || destination?.description;
 
   return (
     `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
         <header class="event__header">
-          ${createEventTypeTemplate(isAdditingType ? 'Flight' : type)}
+          ${createEventTypeTemplate(type)}
 
           <div class="event__field-group  event__field-group--destination">
             <label class="event__label  event__type-output" for="event-destination-1">
-              ${isAdditingType ? 'Flight' : type}
+              ${type}
             </label>
             <input
               class="event__input  event__input--destination"
               id="event-destination-1"
               type="text"
               name="event-destination"
-              value="${isAdditingType ? '' : name}"
+              value="${destination?.name ?? ''}"
               list="destination-list-1"
             >
             <datalist id="destination-list-1">
@@ -190,9 +183,11 @@ function createEditFormTemplate({destinations, state, offers, modeType}) {
             <input
               class="event__input  event__input--price"
               id="event-price-1"
-              type="text"
+              type="number"
+              min="1"
               name="event-price"
-              value="${isAdditingType ? 0 : basePrice}"
+              value="${he.encode(String(basePrice))}"
+              pattern="^[0-9]+$"
             >
           </div>
 
@@ -201,8 +196,8 @@ function createEditFormTemplate({destinations, state, offers, modeType}) {
           ${isAdditingType ? '' : rollupTemplate()}
         </header>
         <section class="event__details">
-          ${createOffersSectionTemplate(offersByType, state.offers)}
-          ${createDestinationInfoTemplate(description, pictures)}
+          ${createOffersSectionTemplate(isOffers, offersByType, state.offers)}
+          ${createDestinationInfoTemplate(isDestination, destination)}
         </section>
       </form>
     </li>`
@@ -220,7 +215,7 @@ export default class PointEditView extends AbstractStatefulView {
   #modeType = null;
 
   constructor({
-    eventPoint,
+    eventPoint = EMPTY_POINT,
     destinations,
     offers,
     onCloseClick,
@@ -229,7 +224,6 @@ export default class PointEditView extends AbstractStatefulView {
     modeType = Mode.EDITING,
   }) {
     super();
-    this._setState(PointEditView.parsePointToState(eventPoint));
     this.#destinations = destinations;
     this.#offers = offers;
     this.#onCloseClick = onCloseClick;
@@ -237,6 +231,7 @@ export default class PointEditView extends AbstractStatefulView {
     this.#onDeleteClick = onDeleteClick;
     this.#modeType = modeType;
 
+    this._setState(PointEditView.parsePointToState(eventPoint));
     this._restoreHandlers();
   }
 

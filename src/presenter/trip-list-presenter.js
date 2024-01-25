@@ -20,26 +20,31 @@ export default class TripListPresenter {
   #currentSortType = SortTypes.DAY;
   #pointsPresenter = new Map();
   #sortPresenter = null;
+  #isAdditingType = null;
   #newPointPresenter = null;
+  #newPointButtonPresenter = null;
 
   constructor ({
     tripContainer,
     destinationModel,
     eventPointsModel,
     offersModel,
-    filterModel
+    filterModel,
+    newPointButtonPresenter,
   }) {
     this.#tripContainer = tripContainer;
     this.#destinationModel = destinationModel;
     this.#eventPointsModel = eventPointsModel;
     this.#offersModel = offersModel;
     this.#filterModel = filterModel;
+    this.#newPointButtonPresenter = newPointButtonPresenter;
 
     this.#newPointPresenter = new NewPointPresenter({
       tripContainer: this.#tripListComponent.element,
       destinationModel: this.#destinationModel,
       offersModel: this.#offersModel,
-      onDataChange: this.#handleViewAction
+      onDataChange: this.#handleViewAction,
+      onDestroy: this.#handleNewPointDestroy,
     });
 
     this.#eventPointsModel.addObserver(this.#handleModelEvent);
@@ -86,11 +91,23 @@ export default class TripListPresenter {
     }
   };
 
-  createPoint() {
+  createPoint = () => {
+    this.#isAdditingType = true;
     this.#currentSortType = SortTypes.DAY;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this.#newPointButtonPresenter.disableButton();
     this.#newPointPresenter.init();
-  }
+  };
+
+  #handleNewPointDestroy = ({ isCanceled }) => {
+    this.#isAdditingType = false;
+    this.#newPointButtonPresenter.enableButton();
+
+    if(!this.eventPoints.length && isCanceled) {
+      this.#clearTripBoard();
+      this.#renderTripBoard();
+    }
+  };
 
   #handleSortTypeChange = (sortType) => {
     this.#currentSortType = sortType;
@@ -109,7 +126,7 @@ export default class TripListPresenter {
   }
 
   #clearTripBoard({resetSortType = false} = {}) {
-    this.#newPointPresenter.destroy();
+    this.#newPointPresenter.destroy({ isCanceled: true });
     this.#pointsPresenter.forEach((presenter) => presenter.destroy());
     this.#pointsPresenter.clear();
     this.#sortPresenter.destroy();
@@ -138,7 +155,7 @@ export default class TripListPresenter {
   }
 
   #handleModeChange = () => {
-    this.#newPointPresenter.destroy();
+    this.#newPointPresenter.destroy({ isCanceled: true });
     this.#pointsPresenter.forEach((presenter) => presenter.resetView());
   };
 

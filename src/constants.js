@@ -79,6 +79,16 @@ const Mode = {
   ADDITING: 'ADDITING'
 };
 
+const EMPTY_POINT = {
+  basePrice: 0,
+  dateFrom: null,
+  dateTo: null,
+  destination: null,
+  isFavorite: false,
+  offers: [],
+  type: 'flight'
+};
+
 const UserAction = {
   UPDATE_POINT: 'UPDATE_POINT',
   ADD_POINT: 'ADD_POINT',
@@ -112,6 +122,7 @@ export {
   enabledSortType,
   FilterType,
   Mode,
+  EMPTY_POINT,
   UserAction,
   UpdateType,
   NoPointsTextType

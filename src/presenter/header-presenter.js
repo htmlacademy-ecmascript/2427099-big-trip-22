@@ -3,14 +3,14 @@ import TripHeaderInfoView from '../view/trip-header-info-view.js';
 
 export default class HeaderPresenter {
   #headerContainer = null;
-  #eventPointsModel = null;
+  #tripHeaderInfoComponent = null;
 
-  constructor({ headerContainer, eventPointsModel }) {
+  constructor({ headerContainer }) {
     this.#headerContainer = headerContainer;
-    this.#eventPointsModel = eventPointsModel;
+    this.#tripHeaderInfoComponent = new TripHeaderInfoView();
   }
 
   init () {
-    render(new TripHeaderInfoView(), this.#headerContainer, RenderPosition.AFTERBEGIN);
+    render(this.#tripHeaderInfoComponent, this.#headerContainer, RenderPosition.AFTERBEGIN);
   }
 }

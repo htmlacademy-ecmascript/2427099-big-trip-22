@@ -4,24 +4,27 @@ import NewPointButtonView from '../view/new-point-button-view.js';
 export default class NewPointButtonPresenter {
   #headerContainer = null;
   #newPointButtonComponent = null;
-  #tripListPresenter = null;
+  #handleButtonClick = null;
 
-  constructor({ headerContainer, tripListPresenter }) {
+  constructor({ headerContainer }) {
     this.#headerContainer = headerContainer;
-    this.#tripListPresenter = tripListPresenter;
   }
 
-  init () {
-    this.#newPointButtonComponent = new NewPointButtonView({onClick: this.handleNewPointButtonClick});
+  init ({ onButtonClick }) {
+    this.#handleButtonClick = onButtonClick;
+    this.#newPointButtonComponent = new NewPointButtonView({ onClick: this.#buttonClickHandler });
     render(this.#newPointButtonComponent, this.#headerContainer);
   }
 
-  handleNewPointFormClose = () => {
+  enableButton = () => {
     this.#newPointButtonComponent.element.disabled = false;
   };
 
-  handleNewPointButtonClick = () => {
-    this.#tripListPresenter.createPoint();
+  disableButton = () => {
     this.#newPointButtonComponent.element.disabled = true;
+  };
+
+  #buttonClickHandler = () => {
+    this.#handleButtonClick();
   };
 }

@@ -19,7 +19,6 @@ const filterModel = new FilterModel();
 
 const headerPresenter = new HeaderPresenter({
   headerContainer: siteTripMainElement,
-  eventPointsModel
 });
 
 const filterPresenter = new FilterPresenter({
@@ -28,24 +27,24 @@ const filterPresenter = new FilterPresenter({
   filterModel
 });
 
+const newPointButtonPresenter = new NewPointButtonPresenter({
+  headerContainer: siteTripMainElement,
+});
+
 const tripListPresenter = new TripListPresenter({
   tripContainer: siteTripEventsElement,
   destinationModel,
   eventPointsModel,
   offersModel,
-  filterModel
-});
-
-const newPointButtonPresenter = new NewPointButtonPresenter({
-  headerContainer: siteTripMainElement,
-  tripListPresenter: tripListPresenter,
+  filterModel,
+  newPointButtonPresenter: newPointButtonPresenter
 });
 
 export default class BigTripApp {
   init() {
     headerPresenter.init();
     filterPresenter.init();
-    newPointButtonPresenter.init();
+    newPointButtonPresenter.init({ onButtonClick: tripListPresenter.createPoint});
     tripListPresenter.init();
   }
 }

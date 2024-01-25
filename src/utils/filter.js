@@ -3,7 +3,7 @@ import { FilterType } from '../constants';
 
 const isPastDate = (point) => dayjs().isAfter(point.dateFrom);
 
-const isPresentDate = (point) => dayjs().isSame(point.dateFrom);
+const isPresentDate = (point) => dayjs().isAfter(point.dateFrom) && dayjs().isBefore(point.dateFrom);
 
 const isFutureDate = (point) => dayjs().isBefore(point.dateFrom);
 
