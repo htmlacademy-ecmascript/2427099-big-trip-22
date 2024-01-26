@@ -186,7 +186,7 @@ function createEditFormTemplate({destinations, state, offers, modeType}) {
               type="number"
               min="1"
               name="event-price"
-              value="${he.encode(String(basePrice))}"
+              value="${basePrice}"
               pattern="^[0-9]+$"
             >
           </div>
