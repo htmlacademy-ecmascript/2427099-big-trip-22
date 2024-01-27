@@ -1,5 +1,8 @@
 import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
 import { DateTimeFormat, Time } from '../constants';
+
+dayjs.extend(duration);
 
 const humanizeEventDate = (eventDate) => eventDate ? dayjs(eventDate).format(DateTimeFormat.DATE_FORMAT) : '';
 
@@ -8,69 +11,31 @@ const humanizeEventTime = (eventDateTime) => eventDateTime ? dayjs(eventDateTime
 const humanizeEventDateTime = (eventDateTime) => eventDateTime ? dayjs(eventDateTime).format(DateTimeFormat.DATE_TIME_FORMAT) : '';
 
 const getEventDuration = (dateFrom, dateTo) => {
-  const durationInMinutes = dayjs(dateTo).diff(dateFrom, 'm');
-
-  const days = Math.floor(durationInMinutes / (Time.HOURS_PER_DAY * Time.MINUTES_PER_HOUR));
-  const hours = Math.floor((durationInMinutes % (Time.HOURS_PER_DAY * Time.MINUTES_PER_HOUR)) / Time.MINUTES_PER_HOUR);
-  const minutes = durationInMinutes % Time.MINUTES_PER_HOUR;
-
-  let durationString = '';
-
-  if (days > 0) {
-    durationString += `${days}D `;
+  const diff = dayjs(dateTo).diff(dayjs(dateFrom), 'm');
+  if (diff >= Time.MINUTES_PER_DAY) {
+    return dayjs.duration(diff, 'm').format('DD[D] HH[H] mm[M]');
   }
 
-  if (hours > 0) {
-    durationString += `${hours}H `;
+  if (diff >= Time.MINUTES_PER_HOUR) {
+    return dayjs.duration(diff, 'm').format('HH[H] mm[M]');
   }
 
-  if (minutes > 0) {
-    durationString += `${minutes}M `;
+  if (diff < Time.MINUTES_PER_HOUR) {
+    return dayjs.duration(diff, 'm').format('mm[M]');
   }
-
-  return durationString;
 };
 
-const isPastDate = (dueDate) => {
-  const currentDate = dayjs();
-  const targetDate = dayjs(dueDate);
-  return targetDate.isBefore(currentDate);
-};
-
-const isPresentDate = (dueDate) => {
-  const currentDate = dayjs();
-  const targetDate = dayjs(dueDate);
-  return targetDate.isSame(currentDate, 'day');
-};
-
-const isFutureDate = (dueDate) => {
-  const currentDate = dayjs();
-  const targetDate = dayjs(dueDate);
-  return targetDate.isAfter(currentDate);
-};
-
-const sortByDate = (eventA, eventB) => dayjs(eventA.dateFrom).diff(dayjs(eventB.dateFrom));
-
-const sortByPrice = (eventA, eventB) => eventB.basePrice - eventA.basePrice;
-
-const sortByTime = (eventA, eventB) => {
-  const eventADuration = dayjs(eventA.dateTo).diff(eventA.dateFrom);
-  const eventBDuration = dayjs(eventB.dateTo).diff(eventB.dateFrom);
-
-  return eventBDuration - eventADuration;
-};
+const isMinorChange = (eventA, eventB) =>
+  eventA.dateFrom !== eventB.dateFrom ||
+  eventA.basePrice !== eventB.basePrice ||
+  getEventDuration(eventA.dateFrom, eventA.dateTo) !== getEventDuration(eventB.dateFrom, eventB.dateTo);
 
 export {
   humanizeEventDate,
   humanizeEventTime,
   humanizeEventDateTime,
   getEventDuration,
-  isPastDate,
-  isPresentDate,
-  isFutureDate,
-  sortByPrice,
-  sortByTime,
-  sortByDate
+  isMinorChange
 };
 
 

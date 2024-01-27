@@ -1,9 +1,10 @@
+import he from 'he';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import { humanizeEventDateTime } from '../utils/event.js';
 import { capitalizeFirstLetter } from '../utils/common.js';
-import { EVENT_TYPES } from '../constants.js';
+import { EVENT_TYPES, Mode, EMPTY_POINT } from '../constants.js';
 
 function createOfferTemplate(offers, selectedOffers) {
   return offers.map(({ id, title, price }) => (
@@ -88,11 +89,49 @@ function createPictureTemplate(pictures) {
   )).join('');
 }
 
-function createEditFormTemplate({destinations, state, offers}) {
+function rollupTemplate() {
+  return (
+    `
+    <button class="event__rollup-btn" type="button">
+      <span class="visually-hidden">Open event</span>
+    </button>
+    `
+  );
+}
+
+function createOffersSectionTemplate(isOffers, offersByType, offers) {
+  return isOffers ? `
+    <section class="event__section  event__section--offers">
+      <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+
+      <div class="event__available-offers">
+        ${createOfferTemplate(offersByType, offers)}
+      </div>
+    </section>
+  ` : '';
+}
+
+function createDestinationInfoTemplate(isDestination, destination) {
+  return isDestination || destination ?
+    `<section class="event__section  event__section--destination">
+      <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+      <p class="event__destination-description">${destination.description}</p>
+      <div class="event__photos-container">
+        <div class="event__photos-tape">
+          ${createPictureTemplate(destination.pictures)}
+        </div>
+      </div>
+    </section>` : '';
+}
+
+function createEditFormTemplate({destinations, state, offers, modeType}) {
+  const isAdditingType = modeType === Mode.ADDITING;
   const { type, basePrice, dateFrom, dateTo } = state;
   const destination = destinations.find((item) => item.id === state.destination);
-  const { id, name, description, pictures } = destination;
   const offersByType = offers.find((item) => item.type === type).offers;
+  const isOffers = offersByType.length > 0;
+  const isDestination = destination?.pictures.length > 0 || destination?.description;
+
   return (
     `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -100,10 +139,17 @@ function createEditFormTemplate({destinations, state, offers}) {
           ${createEventTypeTemplate(type)}
 
           <div class="event__field-group  event__field-group--destination">
-            <label class="event__label  event__type-output" for="event-destination-${id}">
+            <label class="event__label  event__type-output" for="event-destination-1">
               ${type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${name}" list="destination-list-1">
+            <input
+              class="event__input  event__input--destination"
+              id="event-destination-1"
+              type="text"
+              name="event-destination"
+              value="${he.encode(destination?.name ?? '')}"
+              list="destination-list-1"
+            >
             <datalist id="destination-list-1">
               ${createDestinationOptionsTemplate(destinations)}
             </datalist>
@@ -111,10 +157,22 @@ function createEditFormTemplate({destinations, state, offers}) {
 
           <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-1">From</label>
-            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${humanizeEventDateTime(dateFrom)}">
+            <input
+              class="event__input  event__input--time"
+              id="event-start-time-1"
+              type="text"
+              name="event-start-time"
+              value="${isAdditingType ? '' : humanizeEventDateTime(dateFrom)}"
+            >
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">To</label>
-            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${humanizeEventDateTime(dateTo)}">
+            <input
+              class="event__input  event__input--time"
+              id="event-end-time-1"
+              type="text"
+              name="event-end-time"
+              value="${isAdditingType ? '' : humanizeEventDateTime(dateTo)}"
+            >
           </div>
 
           <div class="event__field-group  event__field-group--price">
@@ -122,58 +180,58 @@ function createEditFormTemplate({destinations, state, offers}) {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+            <input
+              class="event__input  event__input--price"
+              id="event-price-1"
+              type="number"
+              min="1"
+              name="event-price"
+              value="${basePrice}"
+              pattern="^[0-9]+$"
+            >
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Delete</button>
-          <button class="event__rollup-btn" type="button">
-            <span class="visually-hidden">Open event</span>
-          </button>
+          <button class="event__reset-btn" type="reset">${isAdditingType ? 'Cancel' : 'Delete'}</button>
+          ${isAdditingType ? '' : rollupTemplate()}
         </header>
         <section class="event__details">
-        ${offersByType.length ? `
-          <section class="event__section  event__section--offers">
-          <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
-          <div class="event__available-offers">
-            ${createOfferTemplate(offersByType, state.offers)}
-          </div>
-          </section>
-        ` : ''}
-          <section class="event__section  event__section--destination">
-            <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-            <p class="event__destination-description">${description}</p>
-            ${pictures.length ? `
-            <div class="event__photos-container">
-              <div class="event__photos-tape">
-                ${createPictureTemplate(pictures)}
-              </div>
-            </div>
-            ` : ''}
-          </section>
+          ${createOffersSectionTemplate(isOffers, offersByType, state.offers)}
+          ${createDestinationInfoTemplate(isDestination, destination)}
         </section>
       </form>
     </li>`
   );
 }
 
-export default class EditFormView extends AbstractStatefulView {
+export default class PointEditView extends AbstractStatefulView {
   #destinations = [];
   #offers = [];
   #onCloseClick = null;
   #onFormSubmit = null;
+  #onDeleteClick = null;
   #datePickerFrom = null;
   #datePickerTo = null;
+  #modeType = null;
 
-  constructor({ destinations, eventPoint, offers, onCloseClick, onFormSubmit }) {
+  constructor({
+    eventPoint = EMPTY_POINT,
+    destinations,
+    offers,
+    onCloseClick,
+    onFormSubmit,
+    onDeleteClick,
+    modeType = Mode.EDITING,
+  }) {
     super();
-    this._setState(EditFormView.parsePointToState(eventPoint));
     this.#destinations = destinations;
     this.#offers = offers;
     this.#onCloseClick = onCloseClick;
     this.#onFormSubmit = onFormSubmit;
+    this.#onDeleteClick = onDeleteClick;
+    this.#modeType = modeType;
 
+    this._setState(PointEditView.parsePointToState(eventPoint));
     this._restoreHandlers();
   }
 
@@ -181,7 +239,8 @@ export default class EditFormView extends AbstractStatefulView {
     return createEditFormTemplate({
       destinations: this.#destinations,
       state: this._state,
-      offers: this.#offers
+      offers: this.#offers,
+      modeType: this.#modeType,
     });
   }
 
@@ -199,19 +258,19 @@ export default class EditFormView extends AbstractStatefulView {
 
   reset(point) {
     this.updateElement(
-      EditFormView.parsePointToState(point),
+      PointEditView.parsePointToState(point),
     );
   }
 
   _restoreHandlers() {
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onCloseClick);
+    if (this.#modeType === Mode.EDITING) {
+      this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onCloseClick);
+    }
     this.element.querySelector('.event__save-btn').addEventListener('click', this.#submitEditFormHandler);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#pointDeleteHandler);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeOptionHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationOptionHandler);
-    const offersElement = this.element.querySelector('.event__available-offers');
-    if (offersElement) {
-      offersElement.addEventListener('change', this.#offersChangeHandler);
-    }
+    this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offersChangeHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
 
     this.#setDatePickers();
@@ -219,7 +278,12 @@ export default class EditFormView extends AbstractStatefulView {
 
   #submitEditFormHandler = (evt) => {
     evt.preventDefault();
-    this.#onFormSubmit(EditFormView.parseStateToPoint(this._state));
+    this.#onFormSubmit(PointEditView.parseStateToPoint(this._state));
+  };
+
+  #pointDeleteHandler = (evt) => {
+    evt.preventDefault();
+    this.#onDeleteClick(PointEditView.parseStateToPoint(this._state));
   };
 
   #typeOptionHandler = (evt) => {
