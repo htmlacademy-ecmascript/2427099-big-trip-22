@@ -1,21 +1,6 @@
-const ImageCount = {
-  MIN: 0,
-  MAX: 6
-};
-
-const OffersCount = {
-  MIN: 0,
-  MAX: 3
-};
-
-const PriceValue = {
-  MIN: 10,
-  MAX: 1000
-};
-
+const BASE_URL = 'https://22.objects.htmlacademy.pro/big-trip';
+const AUTHORIZATION = 'Basic aB3ksS67wcl2sa3k';
 const Time = {
-  MIN_MINUTES: 1,
-  MAX_MINUTES: 2440,
   MINUTES_PER_DAY: 1440,
   MINUTES_PER_HOUR: 60
 };
@@ -37,18 +22,6 @@ const EVENT_TYPES = [
   'sightseeing',
   'restaurant'
 ];
-
-const DESCRIPTIONS = [
-  'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget.',
-  'Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra.',
-  'Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.',
-  'Sed sed nisi sed augue convallis suscipit in sed felis.'
-];
-
-const CITIES = ['Paris', 'Moscow', 'London', 'Tokio', 'New York', 'Berlin', 'Amsterdam', 'San-Francisco', 'Chicago', 'Toronto'];
-
-const OFFERS_TITLES = ['Add luggage', 'Switch to comfort class', 'Add meal', 'Choose seats', 'Travel by train'];
 
 const SortTypes = {
   DAY: 'day',
@@ -79,6 +52,19 @@ const Mode = {
   ADDITING: 'ADDITING'
 };
 
+const Methods = {
+  GET: 'GET',
+  PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE'
+};
+
+const ServiceUrl = {
+  POINTS: 'points',
+  OFFERS: 'offers',
+  DESTINATIONS: 'destinations'
+};
+
 const EMPTY_POINT = {
   basePrice: 0,
   dateFrom: null,
@@ -98,7 +84,8 @@ const UserAction = {
 const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
-  MAJOR: 'MAJOR'
+  MAJOR: 'MAJOR',
+  INIT: 'INIT'
 };
 
 const NoPointsTextType = {
@@ -109,19 +96,17 @@ const NoPointsTextType = {
 };
 
 export {
+  BASE_URL,
+  AUTHORIZATION,
   EVENT_TYPES,
-  DESCRIPTIONS,
-  CITIES,
-  ImageCount,
-  OffersCount,
-  PriceValue,
   Time,
-  OFFERS_TITLES,
   DateTimeFormat,
   SortTypes,
   enabledSortType,
   FilterType,
   Mode,
+  Methods,
+  ServiceUrl,
   EMPTY_POINT,
   UserAction,
   UpdateType,
