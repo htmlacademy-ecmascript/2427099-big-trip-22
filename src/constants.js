@@ -1,8 +1,14 @@
 const BASE_URL = 'https://22.objects.htmlacademy.pro/big-trip';
 const AUTHORIZATION = 'Basic aB3ksS67wcl2sa3k';
+
 const Time = {
   MINUTES_PER_DAY: 1440,
   MINUTES_PER_HOUR: 60
+};
+
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000
 };
 
 const DateTimeFormat = {
@@ -31,7 +37,7 @@ const SortTypes = {
   OFFERS: 'offers'
 };
 
-const enabledSortType = {
+const EnabledSortType = {
   [SortTypes.DAY]: true,
   [SortTypes.EVENT]: false,
   [SortTypes.TIME]: true,
@@ -100,9 +106,10 @@ export {
   AUTHORIZATION,
   EVENT_TYPES,
   Time,
+  TimeLimit,
   DateTimeFormat,
   SortTypes,
-  enabledSortType,
+  EnabledSortType,
   FilterType,
   Mode,
   Methods,

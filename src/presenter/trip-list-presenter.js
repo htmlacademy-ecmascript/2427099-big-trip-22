@@ -1,5 +1,6 @@
-import { SortTypes, UpdateType, UserAction, FilterType } from '../constants.js';
+import { SortTypes, UpdateType, UserAction, FilterType, TimeLimit } from '../constants.js';
 import { render, remove, RenderPosition } from '../framework/render.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import { sorting } from '../utils/sort.js';
 import { filter } from '../utils/filter.js';
 import EmptyEventPointsView from '../view/empty-event-points-view.js';
@@ -26,6 +27,10 @@ export default class TripListPresenter {
   #newPointPresenter = null;
   #newPointButtonPresenter = null;
   #isLoading = true;
+  #uiBlocker = new UiBlocker({
+    lowerLimit: TimeLimit.LOWER_LIMIT,
+    upperLimit: TimeLimit.UPPER_LIMIT
+  });
 
   constructor ({
     tripContainer,
@@ -64,18 +69,36 @@ export default class TripListPresenter {
     this.#renderTripBoard();
   }
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
     switch (actionType) {
       case UserAction.UPDATE_POINT:
-        this.#eventPointsModel.update(updateType, update);
+        this.#pointsPresenter.get(update.id).setSaving();
+        try {
+          await this.#eventPointsModel.update(updateType, update);
+        } catch (err) {
+          this.#pointsPresenter.get(update.id).setAborting();
+        }
         break;
       case UserAction.ADD_POINT:
-        this.#eventPointsModel.add(updateType, update);
+        this.#newPointPresenter.setSaving();
+        try {
+          await this.#eventPointsModel.add(updateType, update);
+        } catch (err) {
+          this.#newPointPresenter.setAborting();
+        }
         break;
       case UserAction.DELETE_POINT:
-        this.#eventPointsModel.delete(updateType, update);
+        this.#pointsPresenter.get(update.id).setDeleting();
+        try {
+          await this.#eventPointsModel.delete(updateType, update);
+        } catch (err) {
+          this.#pointsPresenter.get(update.id).setAborting();
+        }
         break;
     }
+
+    this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, data) => {
