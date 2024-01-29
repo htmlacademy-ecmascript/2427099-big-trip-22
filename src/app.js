@@ -2,19 +2,24 @@ import HeaderPresenter from './presenter/header-presenter.js';
 import TripListPresenter from './presenter/trip-list-presenter.js';
 import FilterPresenter from './presenter/filter-presenter.js';
 import NewPointButtonPresenter from './presenter/new-point-button-presenter.js';
-import MockService from './service/mock-service.js';
 import DestinationModel from './model/destination-model.js';
 import EventPointsModel from './model/event-points-model.js';
 import OffersModel from './model/offers-model.js';
 import FilterModel from './model/filter-model.js';
+import PointApiService from './service/point-api-service.js';
+import { BASE_URL, AUTHORIZATION } from './constants.js';
 
 const siteTripMainElement = document.querySelector('.trip-main');
 const siteTripEventsElement = document.querySelector('.trip-events');
 
-const mockService = new MockService();
-const destinationModel = new DestinationModel(mockService);
-const eventPointsModel = new EventPointsModel(mockService);
-const offersModel = new OffersModel(mockService);
+const service = new PointApiService(BASE_URL, AUTHORIZATION);
+const destinationModel = new DestinationModel(service);
+const offersModel = new OffersModel(service);
+const eventPointsModel = new EventPointsModel({
+  service,
+  destinationModel: destinationModel,
+  offersModel: offersModel,
+});
 const filterModel = new FilterModel();
 
 const headerPresenter = new HeaderPresenter({
@@ -44,7 +49,9 @@ export default class BigTripApp {
   init() {
     headerPresenter.init();
     filterPresenter.init();
-    newPointButtonPresenter.init({ onButtonClick: tripListPresenter.createPoint});
     tripListPresenter.init();
+    eventPointsModel.init().finally(() => {
+      newPointButtonPresenter.init({ onButtonClick: tripListPresenter.createPoint});
+    });
   }
 }
