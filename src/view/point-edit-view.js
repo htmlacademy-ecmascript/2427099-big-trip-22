@@ -116,12 +116,14 @@ function createDestinationInfoTemplate(isDestination, destination) {
     `<section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
       <p class="event__destination-description">${destination.description}</p>
-      <div class="event__photos-container">
-        <div class="event__photos-tape">
-          ${createPictureTemplate(destination.pictures)}
+        ${destination.pictures.length > 0 ? `
+        <div class="event__photos-container">
+          <div class="event__photos-tape">
+            ${createPictureTemplate(destination.pictures)}
+          </div>
         </div>
-      </div>
-    </section>` : '';
+        ` : ''}
+    </section>` : '<p class="event__destination-description">No pictures destination description</p>';
 }
 
 function createEditFormTemplate({destinations, state, offers, modeType}) {
@@ -130,7 +132,16 @@ function createEditFormTemplate({destinations, state, offers, modeType}) {
   const destination = destinations.find((item) => item.id === state.destination);
   const offersByType = offers.find((item) => item.type === type).offers;
   const isOffers = offersByType.length > 0;
-  const isDestination = destination?.pictures.length > 0 && destination?.description.trim().length > 0;
+  const isDestination = destination?.pictures.length > 0 || destination?.description.trim().length > 0;
+
+  let buttonText;
+  if (isAdditingType) {
+    buttonText = 'Cancel';
+  } else if (state.isDeleting) {
+    buttonText = 'Deleting...';
+  } else {
+    buttonText = 'Delete';
+  }
 
   return (
     `<li class="trip-events__item">
@@ -191,8 +202,16 @@ function createEditFormTemplate({destinations, state, offers, modeType}) {
             >
           </div>
 
-          <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">${isAdditingType ? 'Cancel' : 'Delete'}</button>
+          <button
+            class="event__save-btn  btn  btn--blue"
+            type="submit"
+            ${state.isDisabled ? 'disabled' : ''}
+          >${state.isSaving ? 'Saving...' : 'Save'}</button>
+          <button
+            class="event__reset-btn"
+            type="reset"
+            ${state.isDisabled ? 'disabled' : ''}
+          >${buttonText}</button>
           ${isAdditingType ? '' : rollupTemplate()}
         </header>
         <section class="event__details">
@@ -346,10 +365,21 @@ export default class PointEditView extends AbstractStatefulView {
   };
 
   static parsePointToState(point) {
-    return {...point};
+    return {
+      ...point,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false
+    };
   }
 
   static parseStateToPoint(state) {
-    return {...state};
+    const point = {...state};
+
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
+
+    return point;
   }
 }

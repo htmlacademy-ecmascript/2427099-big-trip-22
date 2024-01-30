@@ -10,7 +10,7 @@ import PointApiService from './service/point-api-service.js';
 import { BASE_URL, AUTHORIZATION } from './constants.js';
 
 const siteTripMainElement = document.querySelector('.trip-main');
-const siteTripEventsElement = document.querySelector('.trip-events');
+const siteTripEventsElement = document.querySelector('.page-body__page-main .page-body__container');
 
 const service = new PointApiService(BASE_URL, AUTHORIZATION);
 const destinationModel = new DestinationModel(service);

@@ -1,8 +1,14 @@
 const BASE_URL = 'https://22.objects.htmlacademy.pro/big-trip';
 const AUTHORIZATION = 'Basic aB3ksS67wcl2sa3k';
+
 const Time = {
   MINUTES_PER_DAY: 1440,
   MINUTES_PER_HOUR: 60
+};
+
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000
 };
 
 const DateTimeFormat = {
@@ -31,7 +37,7 @@ const SortTypes = {
   OFFERS: 'offers'
 };
 
-const enabledSortType = {
+const EnabledSortType = {
   [SortTypes.DAY]: true,
   [SortTypes.EVENT]: false,
   [SortTypes.TIME]: true,
@@ -90,9 +96,9 @@ const UpdateType = {
 
 const NoPointsTextType = {
   [FilterType.EVERYTHING]: 'Click New Event to create your first point',
-  [FilterType.FUTURE]: 'There are no future points now',
-  [FilterType.PRESENT]: 'There are no present points now',
-  [FilterType.PAST]: 'There are no past points now',
+  [FilterType.FUTURE]: 'There are no future events now',
+  [FilterType.PRESENT]: 'There are no present events now',
+  [FilterType.PAST]: 'There are no past events now',
 };
 
 export {
@@ -100,9 +106,10 @@ export {
   AUTHORIZATION,
   EVENT_TYPES,
   Time,
+  TimeLimit,
   DateTimeFormat,
   SortTypes,
-  enabledSortType,
+  EnabledSortType,
   FilterType,
   Mode,
   Methods,
