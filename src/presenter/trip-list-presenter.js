@@ -4,6 +4,7 @@ import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import { sorting } from '../utils/sort.js';
 import { filter } from '../utils/filter.js';
 import EmptyEventPointsView from '../view/empty-event-points-view.js';
+import TripMainContainerView from '../view/trip-main-container-view.js';
 import TripListView from '../view/trip-list-view.js';
 import PointPresenter from './point-presenter.js';
 import SortPresenter from './sort-presenter.js';
@@ -17,6 +18,7 @@ export default class TripListPresenter {
   #filterModel = null;
   #filterType = FilterType.EVERYTHING;
   #offersModel = null;
+  #tripMainComponent = new TripMainContainerView();
   #tripListComponent = new TripListView();
   #emptyEventPointsComponent = null;
   #currentSortType = SortTypes.DAY;
@@ -128,6 +130,10 @@ export default class TripListPresenter {
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
     this.#newPointButtonPresenter.disableButton();
     this.#newPointPresenter.init();
+
+    if (this.#emptyEventPointsComponent) {
+      remove(this.#emptyEventPointsComponent);
+    }
   };
 
   #handleNewPointDestroy = ({ isCanceled }) => {
@@ -135,7 +141,6 @@ export default class TripListPresenter {
     this.#newPointButtonPresenter.enableButton();
 
     if(!this.eventPoints.length && isCanceled) {
-      this.#clearTripBoard();
       this.#renderTripBoard();
     }
   };
@@ -148,7 +153,7 @@ export default class TripListPresenter {
 
   #renderSort() {
     this.#sortPresenter = new SortPresenter({
-      container: this.#tripContainer,
+      container: this.#tripMainComponent.element,
       currentSortType: this.#currentSortType,
       sortTypeChangeHandler: this.#handleSortTypeChange
     });
@@ -158,9 +163,14 @@ export default class TripListPresenter {
 
   #clearTripBoard({resetSortType = false} = {}) {
     this.#newPointPresenter.destroy({ isCanceled: true });
+
     this.#pointsPresenter.forEach((presenter) => presenter.destroy());
     this.#pointsPresenter.clear();
-    this.#sortPresenter.destroy();
+
+    if (this.#sortPresenter) {
+      this.#sortPresenter.destroy();
+    }
+
     remove(this.#loadingComponent);
 
     if (this.#emptyEventPointsComponent) {
@@ -172,7 +182,18 @@ export default class TripListPresenter {
     }
   }
 
+  #renderTripMainComponent() {
+    render(this.#tripMainComponent, this.#tripContainer);
+  }
+
+  #renderTripListComponent() {
+    render(this.#tripListComponent, this.#tripMainComponent.element);
+  }
+
   #renderTripBoard() {
+    this.#renderTripMainComponent();
+    this.#renderTripListComponent();
+
     if (this.#isLoading) {
       this.#renderLoading();
       return;
@@ -187,7 +208,6 @@ export default class TripListPresenter {
 
     this.#renderSort();
 
-    render(this.#tripListComponent, this.#tripContainer);
     this.#renderPoints(eventPoints);
   }
 
@@ -203,12 +223,12 @@ export default class TripListPresenter {
   }
 
   #renderLoading() {
-    render(this.#loadingComponent, this.#tripContainer, RenderPosition.AFTERBEGIN);
+    render(this.#loadingComponent, this.#tripMainComponent.element, RenderPosition.AFTERBEGIN);
   }
 
   #renderEmptyList() {
     this.#emptyEventPointsComponent = new EmptyEventPointsView({filterType: this.#filterType});
-    render(this.#emptyEventPointsComponent, this.#tripContainer);
+    render(this.#emptyEventPointsComponent, this.#tripMainComponent.element);
   }
 
   #renderPoint(point) {

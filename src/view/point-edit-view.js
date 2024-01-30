@@ -116,12 +116,14 @@ function createDestinationInfoTemplate(isDestination, destination) {
     `<section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
       <p class="event__destination-description">${destination.description}</p>
-      <div class="event__photos-container">
-        <div class="event__photos-tape">
-          ${createPictureTemplate(destination.pictures)}
+        ${destination.pictures.length > 0 ? `
+        <div class="event__photos-container">
+          <div class="event__photos-tape">
+            ${createPictureTemplate(destination.pictures)}
+          </div>
         </div>
-      </div>
-    </section>` : '';
+        ` : ''}
+    </section>` : '<p class="event__destination-description">No pictures destination description</p>';
 }
 
 function createEditFormTemplate({destinations, state, offers, modeType}) {
@@ -130,7 +132,7 @@ function createEditFormTemplate({destinations, state, offers, modeType}) {
   const destination = destinations.find((item) => item.id === state.destination);
   const offersByType = offers.find((item) => item.type === type).offers;
   const isOffers = offersByType.length > 0;
-  const isDestination = destination?.pictures.length > 0 && destination?.description.trim().length > 0;
+  const isDestination = destination?.pictures.length > 0 || destination?.description.trim().length > 0;
 
   let buttonText;
   if (isAdditingType) {

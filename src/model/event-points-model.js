@@ -15,6 +15,18 @@ export default class EventPointsModel extends Observable {
     this.#offersModel = offersModel;
   }
 
+  async init() {
+    try {
+      await Promise.all([this.#destinationModel.init(), this.#offersModel.init()]);
+      const eventPoints = await this.#service.points;
+      this.#eventPoints = eventPoints.map(this.#adaptToClient);
+      this._notify(UpdateType.INIT, { isError: false });
+    } catch (err) {
+      this.#eventPoints = [];
+      this._notify(UpdateType.INIT, { isError: true });
+    }
+  }
+
   get eventPoints() {
     return this.#eventPoints;
   }
@@ -23,19 +35,6 @@ export default class EventPointsModel extends Observable {
     return (
       this.#eventPoints.find((eventPoint) => eventPoint.id === id) || null
     );
-  }
-
-  async init() {
-    try {
-      await this.#destinationModel.init();
-      await this.#offersModel.init();
-      const eventPoints = await this.#service.points;
-      this.#eventPoints = eventPoints.map(this.#adaptToClient);
-    } catch (err) {
-      this.#eventPoints = [];
-    }
-
-    this._notify(UpdateType.INIT);
   }
 
   async update(updateType, point) {

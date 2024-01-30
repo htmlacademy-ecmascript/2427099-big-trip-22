@@ -1,4 +1,4 @@
-import { render, replace, remove } from '../framework/render.js';
+import { render, replace, remove, RenderPosition } from '../framework/render.js';
 import { SortTypes, EnabledSortType } from '../constants.js';
 import ListSortView from '../view/list-sort-view.js';
 
@@ -29,7 +29,7 @@ export default class SortPresenter {
     });
 
     if (prevSortComponent === null) {
-      render(this.#sortComponent, this.#container);
+      render(this.#sortComponent, this.#container, RenderPosition.AFTERBEGIN);
     } else {
       replace(this.#sortComponent, prevSortComponent);
       remove(prevSortComponent);
