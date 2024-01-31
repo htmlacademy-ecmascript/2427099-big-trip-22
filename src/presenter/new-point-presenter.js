@@ -63,7 +63,6 @@ export default class NewPointPresenter {
         isDeleting: false
       });
     };
-
     this.#pointEditComponent.shake(resetFormState);
   }
 
