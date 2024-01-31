@@ -1,7 +1,7 @@
 import { render, replace, remove, RenderPosition } from '../framework/render.js';
 import TripHeaderInfoView from '../view/trip-header-info-view.js';
 import { sorting } from '../utils/sort.js';
-import { SortTypes } from '../constants.js';
+import { SortTypes, HEADER_DESTINATION_COUNT } from '../constants.js';
 
 export default class HeaderPresenter {
   #headerContainer = null;
@@ -33,7 +33,7 @@ export default class HeaderPresenter {
     if (eventPoints.length) {
       const prevHeaderInfoComponent = this.#tripHeaderInfoComponent;
       this.#tripHeaderInfoComponent = new TripHeaderInfoView({
-        tripRoute:this.#showTripRoute(eventPoints),
+        tripRoute: this.#showTripRoute(eventPoints),
         eventDate: this.#showEventDate(eventPoints),
         totalPrice: this.#calculateTotalPrice(eventPoints)
       });
@@ -84,7 +84,7 @@ export default class HeaderPresenter {
 
     let route = '';
 
-    if (destinations.length > 3) {
+    if (destinations.length > HEADER_DESTINATION_COUNT) {
       route = `${destinations[0]} &mdash; ... &mdash; ${destinations[destinations.length - 1]}`;
     } else {
       route = destinations.join(' &mdash; ');

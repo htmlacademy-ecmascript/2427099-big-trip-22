@@ -1,6 +1,8 @@
 const BASE_URL = 'https://22.objects.htmlacademy.pro/big-trip';
 const AUTHORIZATION = 'Basic aB3ksS67wcl2sa3k';
 
+const HEADER_DESTINATION_COUNT = 3;
+
 const Time = {
   MINUTES_PER_DAY: 1440,
   MINUTES_PER_HOUR: 60
@@ -107,6 +109,7 @@ const NoPointsTextType = {
 export {
   BASE_URL,
   AUTHORIZATION,
+  HEADER_DESTINATION_COUNT,
   EVENT_TYPES,
   Time,
   TimeLimit,

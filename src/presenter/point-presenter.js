@@ -148,7 +148,6 @@ export default class PointPresenter {
       isMinorType,
       point
     );
-    document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 
   #pointFavoriteHandler = () => {
