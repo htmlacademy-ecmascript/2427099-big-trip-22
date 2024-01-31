@@ -12,6 +12,7 @@ const TimeLimit = {
 };
 
 const DateTimeFormat = {
+  HEADER_DATE_FORMAT: 'D MMM',
   DATE_FORMAT: 'MMM D',
   TIME_FORMAT: 'HH:mm',
   DATE_TIME_FORMAT: 'DD/MM/YY HH:mm'
@@ -91,7 +92,8 @@ const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
-  INIT: 'INIT'
+  INIT: 'INIT',
+  ERROR: 'ERROR',
 };
 
 const NoPointsTextType = {
@@ -99,6 +101,7 @@ const NoPointsTextType = {
   [FilterType.FUTURE]: 'There are no future events now',
   [FilterType.PRESENT]: 'There are no present events now',
   [FilterType.PAST]: 'There are no past events now',
+  ERROR: 'Failed to load latest route information'
 };
 
 export {

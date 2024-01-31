@@ -24,6 +24,9 @@ const filterModel = new FilterModel();
 
 const headerPresenter = new HeaderPresenter({
   headerContainer: siteTripMainElement,
+  eventPointsModel: eventPointsModel,
+  offersModel: offersModel,
+  destinationModel: destinationModel
 });
 
 const filterPresenter = new FilterPresenter({

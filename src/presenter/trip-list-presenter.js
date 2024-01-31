@@ -121,6 +121,11 @@ export default class TripListPresenter {
         remove(this.#loadingComponent);
         this.#renderTripBoard();
         break;
+      case UpdateType.ERROR:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderErrorMessage();
+        break;
     }
   };
 
@@ -228,6 +233,11 @@ export default class TripListPresenter {
 
   #renderEmptyList() {
     this.#emptyEventPointsComponent = new EmptyEventPointsView({filterType: this.#filterType});
+    render(this.#emptyEventPointsComponent, this.#tripMainComponent.element);
+  }
+
+  #renderErrorMessage() {
+    this.#emptyEventPointsComponent = new EmptyEventPointsView({filterType: 'ERROR'});
     render(this.#emptyEventPointsComponent, this.#tripMainComponent.element);
   }
 
