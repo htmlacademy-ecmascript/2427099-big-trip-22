@@ -27,7 +27,7 @@ export default class NewPointPresenter {
       destinations: this.#destinationModel.destinations,
       offers: this.#offersModel.offers,
       onFormSubmit: this.#handleFormSubmit,
-      onDeleteClick: this.#handleCancelClick,
+      onCloseClick: this.#handleCancelClick,
       modeType: Mode.ADDITING,
     });
 
@@ -49,6 +49,10 @@ export default class NewPointPresenter {
   }
 
   setSaving() {
+    if (!this.#pointEditComponent) {
+      return;
+    }
+
     this.#pointEditComponent.updateElement({
       isDisabled: true,
       isSaving: true,
