@@ -126,6 +126,19 @@ function createDestinationInfoTemplate(isDestination, destination) {
     </section>` : '<p class="event__destination-description">No pictures destination description</p>';
 }
 
+function createButtonTemplate(isCreating, isDisabled, isDeleting) {
+  if (isCreating) {
+    return `
+    <button class="event__reset-btn" type="reset">Cancel</button>
+    `;
+  }
+
+  return `
+    <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Deleting...' : 'Delete'}</button>
+    ${rollupTemplate()}
+  `;
+}
+
 function createEditFormTemplate({destinations, state, offers, modeType}) {
   const isAdditingType = modeType === Mode.ADDITING;
   const { type, basePrice, dateFrom, dateTo } = state;
@@ -133,15 +146,6 @@ function createEditFormTemplate({destinations, state, offers, modeType}) {
   const offersByType = offers.find((item) => item.type === type).offers;
   const isOffers = offersByType.length > 0;
   const isDestination = destination?.pictures.length > 0 || destination?.description.trim().length > 0;
-
-  let buttonText;
-  if (isAdditingType) {
-    buttonText = 'Cancel';
-  } else if (state.isDeleting) {
-    buttonText = 'Deleting...';
-  } else {
-    buttonText = 'Delete';
-  }
 
   return (
     `<li class="trip-events__item">
@@ -207,12 +211,7 @@ function createEditFormTemplate({destinations, state, offers, modeType}) {
             type="submit"
             ${state.isDisabled ? 'disabled' : ''}
           >${state.isSaving ? 'Saving...' : 'Save'}</button>
-          <button
-            class="event__reset-btn"
-            type="reset"
-            ${state.isDisabled ? 'disabled' : ''}
-          >${buttonText}</button>
-          ${isAdditingType ? '' : rollupTemplate()}
+          ${createButtonTemplate(isAdditingType, state.isDisabled, state.isDeleting)}
         </header>
         <section class="event__details">
           ${createOffersSectionTemplate(isOffers, offersByType, state.offers)}
@@ -284,9 +283,12 @@ export default class PointEditView extends AbstractStatefulView {
   _restoreHandlers() {
     if (this.#modeType === Mode.EDITING) {
       this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onCloseClick);
+      this.element.querySelector('.event__save-btn').addEventListener('click', this.#submitEditFormHandler);
+      this.element.querySelector('.event__reset-btn').addEventListener('click', this.#pointDeleteHandler);
+    } else {
+      this.element.querySelector('.event__save-btn').addEventListener('click', this.#submitEditFormHandler);
+      this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formCancelHandler);
     }
-    this.element.querySelector('.event__save-btn').addEventListener('click', this.#submitEditFormHandler);
-    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#pointDeleteHandler);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeOptionHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationOptionHandler);
     this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offersChangeHandler);
@@ -298,6 +300,11 @@ export default class PointEditView extends AbstractStatefulView {
   #submitEditFormHandler = (evt) => {
     evt.preventDefault();
     this.#onFormSubmit(PointEditView.parseStateToPoint(this._state));
+  };
+
+  #formCancelHandler = (evt) => {
+    evt.preventDefault();
+    this.#onCloseClick();
   };
 
   #pointDeleteHandler = (evt) => {

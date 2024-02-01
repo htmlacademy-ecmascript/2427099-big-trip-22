@@ -6,6 +6,8 @@ dayjs.extend(duration);
 
 const humanizeEventDate = (eventDate) => eventDate ? dayjs(eventDate).format(DateTimeFormat.DATE_FORMAT) : '';
 
+const humanizeHeaderEventDate = (eventDate) => eventDate ? dayjs(eventDate).format(DateTimeFormat.HEADER_DATE_FORMAT) : '';
+
 const humanizeEventTime = (eventDateTime) => eventDateTime ? dayjs(eventDateTime).format(DateTimeFormat.TIME_FORMAT) : '';
 
 const humanizeEventDateTime = (eventDateTime) => eventDateTime ? dayjs(eventDateTime).format(DateTimeFormat.DATE_TIME_FORMAT) : '';
@@ -41,6 +43,7 @@ const isMinorChange = (eventA, eventB) =>
 
 export {
   humanizeEventDate,
+  humanizeHeaderEventDate,
   humanizeEventTime,
   humanizeEventDateTime,
   getEventDuration,

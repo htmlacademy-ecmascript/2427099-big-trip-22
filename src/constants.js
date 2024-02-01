@@ -1,6 +1,8 @@
 const BASE_URL = 'https://22.objects.htmlacademy.pro/big-trip';
 const AUTHORIZATION = 'Basic aB3ksS67wcl2sa3k';
 
+const HEADER_DESTINATION_COUNT = 3;
+
 const Time = {
   MINUTES_PER_DAY: 1440,
   MINUTES_PER_HOUR: 60
@@ -12,6 +14,7 @@ const TimeLimit = {
 };
 
 const DateTimeFormat = {
+  HEADER_DATE_FORMAT: 'D MMM',
   DATE_FORMAT: 'MMM D',
   TIME_FORMAT: 'HH:mm',
   DATE_TIME_FORMAT: 'DD/MM/YY HH:mm'
@@ -91,7 +94,8 @@ const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
-  INIT: 'INIT'
+  INIT: 'INIT',
+  ERROR: 'ERROR',
 };
 
 const NoPointsTextType = {
@@ -99,11 +103,13 @@ const NoPointsTextType = {
   [FilterType.FUTURE]: 'There are no future events now',
   [FilterType.PRESENT]: 'There are no present events now',
   [FilterType.PAST]: 'There are no past events now',
+  ERROR: 'Failed to load latest route information'
 };
 
 export {
   BASE_URL,
   AUTHORIZATION,
+  HEADER_DESTINATION_COUNT,
   EVENT_TYPES,
   Time,
   TimeLimit,

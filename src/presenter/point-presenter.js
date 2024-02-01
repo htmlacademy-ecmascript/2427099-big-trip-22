@@ -122,23 +122,23 @@ export default class PointPresenter {
 
   #replacePointToForm() {
     replace(this.#editPointComponent , this.#pointComponent);
+    document.addEventListener('keydown', this.#escKeyDownHandler);
     this.#handleModeChange();
     this.#mode = Mode.EDITING;
   }
 
   #replaceFormToPoint() {
     replace(this.#pointComponent, this.#editPointComponent);
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
     this.#mode = Mode.DEFAULT;
   }
 
   #pointEditHandler = () => {
     this.#replacePointToForm();
-    document.addEventListener('keydown', this.#escKeyDownHandler);
   };
 
   #pointCloseEditHandler = () => {
     this.#replaceFormToPoint();
-    document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 
   #pointEditSubmitHandler = (point) => {
@@ -148,7 +148,6 @@ export default class PointPresenter {
       isMinorType,
       point
     );
-    document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 
   #pointFavoriteHandler = () => {
