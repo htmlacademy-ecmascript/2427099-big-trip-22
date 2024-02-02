@@ -4,8 +4,8 @@ import { UserAction, UpdateType, Mode } from '../constants.js';
 
 export default class NewPointPresenter {
   #tripContainer = null;
-  #destinationModel = [];
-  #offersModel = [];
+  #destinationModel = null;
+  #offersModel = null;
   #onDataChange = null;
   #onDestroy = null;
   #pointEditComponent = null;

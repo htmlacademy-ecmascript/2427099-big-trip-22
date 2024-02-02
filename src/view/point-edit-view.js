@@ -225,7 +225,7 @@ function createEditFormTemplate({destinations, state, offers, modeType}) {
 export default class PointEditView extends AbstractStatefulView {
   #destinations = [];
   #offers = [];
-  #onCloseClick = null;
+  #rollupButtonClickHandler = null;
   #onFormSubmit = null;
   #onDeleteClick = null;
   #datePickerFrom = null;
@@ -244,7 +244,7 @@ export default class PointEditView extends AbstractStatefulView {
     super();
     this.#destinations = destinations;
     this.#offers = offers;
-    this.#onCloseClick = onCloseClick;
+    this.#rollupButtonClickHandler = onCloseClick;
     this.#onFormSubmit = onFormSubmit;
     this.#onDeleteClick = onDeleteClick;
     this.#modeType = modeType;
@@ -282,52 +282,52 @@ export default class PointEditView extends AbstractStatefulView {
 
   _restoreHandlers() {
     if (this.#modeType === Mode.EDITING) {
-      this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onCloseClick);
-      this.element.querySelector('.event__save-btn').addEventListener('click', this.#submitEditFormHandler);
-      this.element.querySelector('.event__reset-btn').addEventListener('click', this.#pointDeleteHandler);
+      this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#rollupButtonClickHandler);
+      this.element.querySelector('.event__save-btn').addEventListener('click', this.#saveButtonClickHandler);
+      this.element.querySelector('.event__reset-btn').addEventListener('click', this.#deleteButtonClickHandler);
     } else {
-      this.element.querySelector('.event__save-btn').addEventListener('click', this.#submitEditFormHandler);
-      this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formCancelHandler);
+      this.element.querySelector('.event__save-btn').addEventListener('click', this.#saveButtonClickHandler);
+      this.element.querySelector('.event__reset-btn').addEventListener('click', this.#cancelButtonClickHandler);
     }
-    this.element.querySelector('.event__type-group').addEventListener('change', this.#typeOptionHandler);
-    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationOptionHandler);
-    this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offersChangeHandler);
-    this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
+    this.element.querySelector('.event__type-group').addEventListener('change', this.#typeGroupChangeHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationInputChangeHandler);
+    this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offersOptionChangeHandler);
+    this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputChangeHandler);
 
     this.#setDatePickers();
   }
 
-  #submitEditFormHandler = (evt) => {
+  #saveButtonClickHandler = (evt) => {
     evt.preventDefault();
     this.#onFormSubmit(PointEditView.parseStateToPoint(this._state));
   };
 
-  #formCancelHandler = (evt) => {
+  #cancelButtonClickHandler = (evt) => {
     evt.preventDefault();
-    this.#onCloseClick();
+    this.#rollupButtonClickHandler();
   };
 
-  #pointDeleteHandler = (evt) => {
+  #deleteButtonClickHandler = (evt) => {
     evt.preventDefault();
     this.#onDeleteClick(PointEditView.parseStateToPoint(this._state));
   };
 
-  #typeOptionHandler = (evt) => {
+  #typeGroupChangeHandler = (evt) => {
     this.updateElement({type: evt.target.value, offers: []});
   };
 
-  #destinationOptionHandler = (evt) => {
+  #destinationInputChangeHandler = (evt) => {
     const selectedDestination = this.#destinations.find((item) => item.name === evt.target.value);
     const selectedDestinationId = selectedDestination ? selectedDestination.id : null;
     this.updateElement({destination: selectedDestinationId});
   };
 
-  #offersChangeHandler = () => {
+  #offersOptionChangeHandler = () => {
     const selectedOffers = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'));
     this._setState({offers: selectedOffers.map((offer) => offer.dataset.offerId)});
   };
 
-  #priceInputHandler = (evt) => {
+  #priceInputChangeHandler = (evt) => {
     this._setState({basePrice: +evt.target.value});
   };
 
