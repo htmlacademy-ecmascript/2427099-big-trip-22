@@ -49,7 +49,7 @@ const tripListPresenter = new TripListPresenter({
 });
 
 export default class BigTripApp {
-  async init() {
+  init() {
     headerPresenter.init();
     filterPresenter.init();
     tripListPresenter.init();
