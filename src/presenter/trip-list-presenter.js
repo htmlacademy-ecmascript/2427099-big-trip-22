@@ -125,6 +125,7 @@ export default class TripListPresenter {
         this.#isLoading = false;
         remove(this.#loadingComponent);
         this.#renderErrorMessage();
+        this.#newPointButtonPresenter.disableButton();
         break;
     }
   };

@@ -49,12 +49,11 @@ const tripListPresenter = new TripListPresenter({
 });
 
 export default class BigTripApp {
-  init() {
+  async init() {
     headerPresenter.init();
     filterPresenter.init();
     tripListPresenter.init();
-    eventPointsModel.init().then(() => {
-      newPointButtonPresenter.init({ onButtonClick: tripListPresenter.createPoint});
-    });
+    newPointButtonPresenter.init({ onButtonClick: tripListPresenter.createPoint});
+    eventPointsModel.init();
   }
 }

@@ -20,10 +20,10 @@ export default class EventPointsModel extends Observable {
       await Promise.all([this.#destinationModel.init(), this.#offersModel.init()]);
       const eventPoints = await this.#service.points;
       this.#eventPoints = eventPoints.map(this.#adaptToClient);
-      this._notify(UpdateType.INIT, { isError: false });
+      this._notify(UpdateType.INIT);
     } catch (err) {
       this.#eventPoints = [];
-      this._notify(UpdateType.ERROR, { isError: true });
+      this._notify(UpdateType.ERROR);
     }
   }
 
